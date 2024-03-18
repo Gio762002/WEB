@@ -12,7 +12,7 @@ function SignInForm() {
 
   const handleSubmitSignIn = (e) => {
     e.preventDefault();
-    if (!firstName || !lastName || !address || !email || !phoneNumber) {
+    if (!firstName || !lastName ||  !email ) {
       setError('Veuillez remplir tous les champs.');
       setSuccess('');
     } else {
@@ -21,9 +21,7 @@ function SignInForm() {
       // Réinitialiser les valeurs des champs de formulaire
       setFirstName('');
       setLastName('');
-      setAddress('');
       setEmail('');
-      setPhoneNumber('');
     }
   };
 
@@ -50,28 +48,10 @@ function SignInForm() {
         </Grid>
         <Grid item xs={12}>
           <TextField 
-            label="Address" 
-            variant="outlined" 
-            value={address} 
-            onChange={(e) => setAddress(e.target.value)} 
-            fullWidth
-          />
-        </Grid>
-        <Grid item xs={12}>
-          <TextField 
             label="Email Address" 
             variant="outlined" 
             value={email} 
             onChange={(e) => setEmail(e.target.value)} 
-            fullWidth
-          />
-        </Grid>
-        <Grid item xs={12}>
-          <TextField 
-            label="Phone Number" 
-            variant="outlined" 
-            value={phoneNumber} 
-            onChange={(e) => setPhoneNumber(e.target.value)} 
             fullWidth
           />
         </Grid>
