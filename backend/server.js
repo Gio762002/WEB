@@ -43,7 +43,7 @@ app.listen(API_PORT, () => console.log(`Listening on port ${API_PORT}`));
   
 // Use our router configuration when we call /api
 app.use('/api', router);
-app.use('/api/user', userRouter);
+// app.use('/api/user', userRouter);
 app.use('/api/auth', authRouter);
 
 
