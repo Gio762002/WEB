@@ -12,8 +12,11 @@ function SignInForm() {
 
   const handleSubmitSignIn = (e) => {
     e.preventDefault();
-    if (!firstName || !lastName ||  !email ) {
+    if (!firstName || !lastName || !email) {
       setError('Veuillez remplir tous les champs.');
+      setSuccess('');
+    } else if (!isValidEmail(email)) {
+      setError('Veuillez entrer une adresse e-mail valide.');
       setSuccess('');
     } else {
       setSuccess('Utilisateur bien ajouté !');
@@ -25,33 +28,37 @@ function SignInForm() {
     }
   };
 
+  const isValidEmail = (email) => {
+    return /\S+@\S+\.\S+/.test(email);
+  };
+
   return (
     <form style={{ width: '100%' }}>
       <Grid container spacing={2}>
         <Grid item xs={12} sm={6}>
-          <TextField 
-            label="First Name" 
-            variant="outlined" 
-            value={firstName} 
-            onChange={(e) => setFirstName(e.target.value)} 
+          <TextField
+            label="First Name"
+            variant="outlined"
+            value={firstName}
+            onChange={(e) => setFirstName(e.target.value)}
             fullWidth
           />
         </Grid>
         <Grid item xs={12} sm={6}>
-          <TextField 
-            label="Last Name" 
-            variant="outlined" 
-            value={lastName} 
-            onChange={(e) => setLastName(e.target.value)} 
+          <TextField
+            label="Last Name"
+            variant="outlined"
+            value={lastName}
+            onChange={(e) => setLastName(e.target.value)}
             fullWidth
           />
         </Grid>
         <Grid item xs={12}>
-          <TextField 
-            label="Email Address" 
-            variant="outlined" 
-            value={email} 
-            onChange={(e) => setEmail(e.target.value)} 
+          <TextField
+            label="Email Address"
+            variant="outlined"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
             fullWidth
           />
         </Grid>
