@@ -8,18 +8,38 @@ function LogInForm({ onAuthenticated }) {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
 
-  const handleSubmitLogIn = () => {
-    if (username.trim() === 'omayma' && password.trim() === 'omayma') {
-      setSuccess('Authentification réussie !');
+  const handleSubmitLogIn = async event => {
+    event.preventDefault();
+    await logIn(username, password);  
+  };
+
+  const logIn = async (username, password) => {
+    const response = await fetch('/api/auth/signin', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ username, password })
+    });
+  
+    if (response.ok) {
+      const data = await response.json();
+      setSuccess('Authentification réussie !',data);
       setError('');
       // Appeler la fonction onAuthenticated pour rediriger vers la page AjoutAs
       onAuthenticated();
     } else {
-      setError('Nom d\'utilisateur ou mot de passe incorrect.');
-      setSuccess('');
+      try {
+        const errorData = await response.json();
+        setError(errorData.message);
+        setSuccess('');
+      } catch (error) {
+        setError('Une erreur est survenue lors de la communication avec le serveur.');
+        setSuccess('');
+      }
     }
-  };
-
+  }
+  
   return (
     <form style={{ width: '100%' }}>
       <Grid container spacing={2}>

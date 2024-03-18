@@ -17,14 +17,33 @@ function SignInForm() {
       setError('Veuillez entrer une adresse e-mail valide.');
       setSuccess('');
     } else {
-      setSuccess('Utilisateur bien ajouté !');
-      setError('');
+      signUp(UserName, email, password);
       // Réinitialiser les valeurs des champs de formulaire
       setUserName('');
       setPassword('');
       setEmail('');
     }
   };
+
+  const signUp = async (username, email, password) => {
+    const response = await fetch('/api/auth/signup', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ username, email, password })
+    });
+  
+    if (response.status === 201) {
+      const data = await response.json();
+      setSuccess('Utilisateur bien ajouté !',data);
+      setError('');
+    } else {
+      const errorData = await response.json();
+      setError(errorData.message);
+      setSuccess('');
+    }
+  }
 
   const isValidEmail = (email) => {
     return /\S+@\S+\.\S+/.test(email);
@@ -78,4 +97,7 @@ function SignInForm() {
     </form>
   );
 }
+
+
+
 export default SignInForm;
