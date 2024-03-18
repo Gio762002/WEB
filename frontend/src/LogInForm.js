@@ -48,8 +48,8 @@ function LogInForm({ onAuthenticated }) {
           </Button>
         </Grid>
         <Grid item xs={12}>
-          {error && <p style={{ color: 'red' }}>{error}</p>}
-          {success && <p style={{ color: 'green' }}>{success}</p>}
+          <p style={{ color: error ? 'red' : 'transparent' }}>{error || '\u200B'}</p>
+          <p style={{ color: success ? 'green' : 'transparent' }}>{success || '\u200B'}</p>
         </Grid>
       </Grid>
     </form>

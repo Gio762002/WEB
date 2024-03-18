@@ -2,17 +2,15 @@ import React, { useState } from 'react';
 import { TextField, Button, Grid } from '@material-ui/core';
 
 function SignInForm() {
-  const [firstName, setFirstName] = useState('');
-  const [lastName, setLastName] = useState('');
-  const [address, setAddress] = useState('');
+  const [UserName, setUserName] = useState('');
   const [email, setEmail] = useState('');
-  const [phoneNumber, setPhoneNumber] = useState('');
+  const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
 
   const handleSubmitSignIn = (e) => {
     e.preventDefault();
-    if (!firstName || !lastName || !email) {
+    if (!UserName || !password || !email) {
       setError('Veuillez remplir tous les champs.');
       setSuccess('');
     } else if (!isValidEmail(email)) {
@@ -22,8 +20,8 @@ function SignInForm() {
       setSuccess('Utilisateur bien ajouté !');
       setError('');
       // Réinitialiser les valeurs des champs de formulaire
-      setFirstName('');
-      setLastName('');
+      setUserName('');
+      setPassword('');
       setEmail('');
     }
   };
@@ -37,23 +35,14 @@ function SignInForm() {
       <Grid container spacing={2}>
         <Grid item xs={12} sm={6}>
           <TextField
-            label="First Name"
+            label="Username"
             variant="outlined"
-            value={firstName}
-            onChange={(e) => setFirstName(e.target.value)}
+            value={UserName}
+            onChange={(e) => setUserName(e.target.value)}
             fullWidth
           />
         </Grid>
         <Grid item xs={12} sm={6}>
-          <TextField
-            label="Last Name"
-            variant="outlined"
-            value={lastName}
-            onChange={(e) => setLastName(e.target.value)}
-            fullWidth
-          />
-        </Grid>
-        <Grid item xs={12}>
           <TextField
             label="Email Address"
             variant="outlined"
@@ -63,14 +52,28 @@ function SignInForm() {
           />
         </Grid>
         <Grid item xs={12}>
-          <Button variant="contained" color="primary" onClick={handleSubmitSignIn} fullWidth>
+          <TextField
+            label="Password"
+            variant="outlined"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            fullWidth
+          />
+        </Grid>
+        <Grid item xs={12}>
+          <Button 
+            variant="contained" 
+            color="primary" 
+            onClick={handleSubmitSignIn} 
+            fullWidth
+          >
             Submit
           </Button>
         </Grid>
         <Grid item xs={12}>
-          {error && <p style={{ color: 'red' }}>{error}</p>}
-          {success && <p style={{ color: 'green' }}>{success}</p>}
-        </Grid>
+          <p style={{ color: error ? 'red' : 'transparent' }}>{error || '\u200B'}</p>
+          <p style={{ color: success ? 'green' : 'transparent' }}>{success || '\u200B'}</p>
+          </Grid>
       </Grid>
     </form>
   );
