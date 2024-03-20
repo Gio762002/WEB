@@ -16,20 +16,22 @@ const signup = async (req, res, next) => {
         await user.save();
         return res.status(201).json({ user });
     } catch (error) {
-        next(error);
+        if (error.code === 11000) {
+            next(errorHandler(400, "Le nom d'utilisateur ou l'adresse e-mail existe déjà"));
+        }
     }
     }
 
 const signin = async (req, res, next) => {
-    const { email, password } = req.body;
+    const { username, password } = req.body;
     try {
-        const validUser = await User.findOne({ email });
+        const validUser = await User.findOne({ username });
         if (!validUser) {
-            return next(errorHandler(404, "User not found"));
+            return next(errorHandler(404, "Utilisateur non trouvé"));
         }
         const validPassword = await bcryptjs.compareSync(password, validUser.password);
         if (!validPassword) {
-            return next(errorHandler(401, "Invalid password"));
+            return next(errorHandler(401, "Mot de passe incorrect"));
         }
         const token = jwt.sign({ id : validUser._id }, process.env.JWT_SECRET, { expiresIn: "1h" });
         const { password: pass, ...rest } = validUser._doc;
@@ -38,7 +40,7 @@ const signin = async (req, res, next) => {
             .status(200)
             .json({ rest });
     } catch (error) {
-        next(error);
+        next(errorHandler(500, error.message));
     }
 };
 

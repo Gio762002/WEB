@@ -3,6 +3,7 @@
 // first we import our dependencies…
 const express = require("express");
 const bodyParser = require("body-parser");
+const cors = require("cors");
 const mongoose = require("mongoose");
 const dotenv = require("dotenv");
 dotenv.config(); 
@@ -13,7 +14,7 @@ const router = express.Router();
 
 // const userRouter = require('./routes/user.route.js');
 const authRouter = require('./routes/auth.route.js');
-
+const topoRouter = require('./routes/topo.route.js');
 
 // set our port to either a predetermined port number if you have set it up, or 3001
 const API_PORT = process.env.API_PORT || 3001;
@@ -42,15 +43,16 @@ router.get('/test', (req, res) => {
 
 
 app.listen(API_PORT, () => console.log(`Listening on port ${API_PORT}`));
-  
+app.use(cors());
 // Use our router configuration when we call /api
 app.use('/api', router);
 // app.use('/api/user', userRouter);
 app.use('/api/auth', authRouter);
+app.use('/api/topo', topoRouter);
 
 
 app.use((err, req, res, next) => {
-  const statusCode = res.statusCode || 500;
+  const statusCode = err.statusCode || 500;
   const message = err.message || 'Internal Server Error';
   return res.status(statusCode).json({ 
     success: false,

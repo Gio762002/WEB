@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Button, Grid, Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions } from '@material-ui/core';
-import routerImage from './routeurss.png'; // Importez votre image de routeur
-import './App.css';
+import routerImage from '../routeurss.png'; // Importez votre image de routeur
+import '../App.css';
 
 function AjoutAs() {
   const [asData, setAsData] = useState([]);
