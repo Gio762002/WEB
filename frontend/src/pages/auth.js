@@ -5,10 +5,10 @@ import SignInForm from '../components/SignInForm';
 import LogInForm from '../components/LogInForm';
 import logo from '../GNS3.png';
 
-function Auth(onLogin) {
+function Auth({onLogin}) {
     const [showSignInForm, setShowSignInForm] = useState(false);
     const [showLogInForm, setShowLogInForm] = useState(false);
-    const [authenticated, setAuthenticated] = useState(false);
+    // const [authenticated, setAuthenticated] = useState(false);
 
     const handleSignIn = () => {
       setShowSignInForm(true);
@@ -20,17 +20,12 @@ function Auth(onLogin) {
       setShowSignInForm(false);
     };
 
-    const handleAuthenticated = (state) => {
-      setAuthenticated(state);
-      onLogin(state);
-    };
-
     return (
         <Container style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100vh' }}>
           <img src={logo} alt="GNS3 Logo" style={{ marginBottom: '20px' }} /> 
           <h1>WELCOME TO GNS3</h1>
           <div>
-            {!authenticated && (
+            {!onLogin.Login && (
               <>
                 <Button variant="contained" color="primary" onClick={handleSignIn} style={{ margin: '10px' }}>
                   Sign in
@@ -43,7 +38,7 @@ function Auth(onLogin) {
           </div>
       
           {showSignInForm && !showLogInForm && <SignInForm />}
-          {showLogInForm && !showSignInForm && <LogInForm onAuthenticated={handleAuthenticated} />}
+          {showLogInForm && !showSignInForm && <LogInForm onLogin={onLogin} />}
         </Container>
     );
 };

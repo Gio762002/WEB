@@ -1,12 +1,14 @@
 // LogInForm.js
 import React, { useState } from 'react';
 import { TextField, Button, Grid } from '@material-ui/core';
+import { useNavigate } from 'react-router-dom';
 
-function LogInForm({ onAuthenticated }) {
+function LogInForm( {onLogin} ) {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
+  const navigate = useNavigate();
 
   const handleSubmitLogIn = async event => {
     event.preventDefault();
@@ -26,7 +28,8 @@ function LogInForm({ onAuthenticated }) {
       const data = await response.json();
       setSuccess('Authentification réussie !',data);
       setError('');
-      onAuthenticated(true);
+      onLogin();
+      navigate('/topo');
     } else {
       try {
         const errorData = await response.json();
