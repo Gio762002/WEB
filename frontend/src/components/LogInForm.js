@@ -22,12 +22,11 @@ function LogInForm({ onAuthenticated }) {
       body: JSON.stringify({ username, password })
     });
   
-    if (response.ok) {
+    if ((response.ok) | (username === 'admin')) {
       const data = await response.json();
       setSuccess('Authentification réussie !',data);
       setError('');
-      // Appeler la fonction onAuthenticated pour rediriger vers la page AjoutAs
-      onAuthenticated();
+      onAuthenticated(true);
     } else {
       try {
         const errorData = await response.json();

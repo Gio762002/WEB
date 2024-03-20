@@ -5,16 +5,16 @@ import AjoutAs from './pages/ajoutAs';
 import Auth from './pages/auth';
 
 function App() {
-  const [authen, setAuthen] = useState(false);
+  const [Login, setLogin] = useState(false);
 
-  const handleAuthen = () => {
-    setAuthen(true);
+  const handleLogin = () => {
+    setLogin();
   };
   return (
     <Router>
       <Routes>
-        <Route path="/" element={<Auth onAuthenticated={handleAuthen} />} />
-        <Route path="/topo" element={authen ? <AjoutAs /> : <Navigate to="/" />} />
+        <Route path="/" element={<Auth onLogin={() => handleLogin} />} />
+        <Route path="/topo" element={Login ? <AjoutAs /> : <Navigate to="/" />} />
         <Route path="*" element={<Navigate to="/" />} />
       </Routes>
     </Router>

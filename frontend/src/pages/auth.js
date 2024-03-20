@@ -5,7 +5,7 @@ import SignInForm from '../components/SignInForm';
 import LogInForm from '../components/LogInForm';
 import logo from '../GNS3.png';
 
-function Auth({onAuthenticated}) {
+function Auth(onLogin) {
     const [showSignInForm, setShowSignInForm] = useState(false);
     const [showLogInForm, setShowLogInForm] = useState(false);
     const [authenticated, setAuthenticated] = useState(false);
@@ -20,9 +20,9 @@ function Auth({onAuthenticated}) {
       setShowSignInForm(false);
     };
 
-    const handleAuthenticated = () => {
-      setAuthenticated(true);
-      onAuthenticated();
+    const handleAuthenticated = (state) => {
+      setAuthenticated(state);
+      onLogin(state);
     };
 
     return (
