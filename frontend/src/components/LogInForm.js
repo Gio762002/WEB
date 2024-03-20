@@ -3,15 +3,9 @@ import React, { useState } from 'react';
 import { TextField, Button, Grid } from '@material-ui/core';
 import { useNavigate } from 'react-router-dom';
 
-<<<<<<< HEAD
 function LogInForm( {onLogin} ) {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-=======
-function LogInForm({ onAuthenticated }) {
-  const [username, setUsername] = useState();
-  const [password, setPassword] = useState();
->>>>>>> 83f57792cbdda01f79068857f756d8dfa23a8991
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const navigate = useNavigate();
@@ -28,16 +22,6 @@ function LogInForm({ onAuthenticated }) {
   };
 
   const logIn = async (username, password) => {
-<<<<<<< HEAD:frontend/src/LogInForm.js
-    // Simuler une authentification réussie
-    setTimeout(() => {
-      setSuccess('Authentification réussie !');
-      setError('');
-      onAuthenticated();
-    }, 1000);
-  };
-
-=======
     const response = await fetch('/api/auth/signin', {
       method: 'POST',
       headers: {
@@ -64,7 +48,6 @@ function LogInForm({ onAuthenticated }) {
     }
   }
   
->>>>>>> 599bfd24e358f1ea150b43ab42302de08a7cef46:frontend/src/components/LogInForm.js
   return (
     <form style={{ width: '100%' }} onSubmit={handleSubmitLogIn}>
       <Grid container spacing={2}>
