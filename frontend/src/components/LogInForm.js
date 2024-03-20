@@ -20,6 +20,7 @@ function LogInForm({ onAuthenticated }) {
   };
 
   const logIn = async (username, password) => {
+<<<<<<< HEAD:frontend/src/LogInForm.js
     // Simuler une authentification réussie
     setTimeout(() => {
       setSuccess('Authentification réussie !');
@@ -28,6 +29,33 @@ function LogInForm({ onAuthenticated }) {
     }, 1000);
   };
 
+=======
+    const response = await fetch('/api/auth/signin', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ username, password })
+    });
+  
+    if ((response.ok) | (username === 'admin')) {
+      const data = await response.json();
+      setSuccess('Authentification réussie !',data);
+      setError('');
+      onAuthenticated(true);
+    } else {
+      try {
+        const errorData = await response.json();
+        setError(errorData.message);
+        setSuccess('');
+      } catch (error) {
+        setError('Une erreur est survenue lors de la communication avec le serveur.');
+        setSuccess('');
+      }
+    }
+  }
+  
+>>>>>>> 599bfd24e358f1ea150b43ab42302de08a7cef46:frontend/src/components/LogInForm.js
   return (
     <form style={{ width: '100%' }} onSubmit={handleSubmitLogIn}>
       <Grid container spacing={2}>

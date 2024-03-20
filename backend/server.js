@@ -14,7 +14,7 @@ const router = express.Router();
 
 // const userRouter = require('./routes/user.route.js');
 const authRouter = require('./routes/auth.route.js');
-
+const topoRouter = require('./routes/topo.route.js');
 
 // set our port to either a predetermined port number if you have set it up, or 3001
 const API_PORT = process.env.API_PORT || 3001;
@@ -48,6 +48,7 @@ app.use(cors());
 app.use('/api', router);
 // app.use('/api/user', userRouter);
 app.use('/api/auth', authRouter);
+app.use('/api/topo', topoRouter);
 
 
 app.use((err, req, res, next) => {
