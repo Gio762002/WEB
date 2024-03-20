@@ -62,13 +62,6 @@
   height: auto;
 }
 
-.toolbar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  height: 48px; /* Hauteur fixe */
-}
-
 @keyframes App-logo-spin {
   from {
     transform: rotate(0deg);

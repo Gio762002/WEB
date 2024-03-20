@@ -111,7 +111,7 @@ function AjoutAs() {
           <Button color="inherit" onClick={handleOpenDeleteDialog} disabled={!selectedProject}>Effacer projet</Button>
         </Toolbar>
       </AppBar>
-      <h1>En utilisant les boutons, vous pouvez créer la topologie du réseau</h1>
+      <h1>Vous pouvez créer la topologie du réseau</h1>
       <Grid container spacing={2}>
         <Grid item>
           <Button variant="contained" color="primary" onClick={createNewAS}>
