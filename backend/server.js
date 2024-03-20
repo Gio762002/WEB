@@ -3,6 +3,7 @@
 // first we import our dependencies…
 const express = require("express");
 const bodyParser = require("body-parser");
+const cors = require("cors");
 const mongoose = require("mongoose");
 const dotenv = require("dotenv");
 dotenv.config(); 
@@ -42,7 +43,7 @@ router.get('/test', (req, res) => {
 
 
 app.listen(API_PORT, () => console.log(`Listening on port ${API_PORT}`));
-  
+app.use(cors());
 // Use our router configuration when we call /api
 app.use('/api', router);
 // app.use('/api/user', userRouter);
@@ -50,7 +51,7 @@ app.use('/api/auth', authRouter);
 
 
 app.use((err, req, res, next) => {
-  const statusCode = res.statusCode || 500;
+  const statusCode = err.statusCode || 500;
   const message = err.message || 'Internal Server Error';
   return res.status(statusCode).json({ 
     success: false,
