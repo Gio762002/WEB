@@ -1,13 +1,7 @@
 import React, { useState } from 'react';
-<<<<<<< HEAD:frontend/src/ajoutAs.js
 import { Button, Grid, AppBar, Toolbar, Typography, Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions, Select, MenuItem } from '@material-ui/core';
-import routerImage from './routeurss.png'; // Importez votre image de routeur
-import './App.css';
-=======
-import { Button, Grid, Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions } from '@material-ui/core';
 import routerImage from '../routeurss.png'; // Importez votre image de routeur
 import '../App.css';
->>>>>>> 599bfd24e358f1ea150b43ab42302de08a7cef46:frontend/src/pages/ajoutAs.js
 
 function AjoutAs() {
   const [projects, setProjects] = useState([]); // Liste des projets
