@@ -32,14 +32,13 @@
   margin-top: 20px ;
   margin-bottom: 20px ;
   width: 100%;
-  height: 70px;
   overflow-x: hidden;
   overflow-y: auto; /* Masquer la barre de défilement verticale */
   border: 2px solid black;
 }
 
 .as-container::-webkit-scrollbar {
-  display: block; /* Masquer la barre de défilement de Webkit */
+  display: none; /* Masquer la barre de défilement de Webkit */
 }
 
 .button-container {
@@ -47,28 +46,11 @@
 }
 
 .rectangle {
-  width: 1200px; /* Ajustez la largeur selon vos besoins */
-  height: 50px; /* Ajustez la hauteur selon vos besoins */
+  width: 1200px; /* Largeur maximale du rectangle */
   padding: 10px;
-  justify-content: flex-start; /* Alignez les éléments à gauche */
   display: flex; /* Ajoutez cette propriété pour permettre la mise en page flex */
-}
-
-.rectangle button {
-  margin-right: 10px; /* Espacement entre les boutons, vous pouvez ajuster selon vos préférences */
-}
-/* Style du curseur de défilement pour les navigateurs Webkit */
-.as-container::-webkit-scrollbar {
-  width: 12px; /* Largeur du curseur de défilement */
-}
-
-.as-container::-webkit-scrollbar-track {
-  background-color: #b0a9a9db; /* Couleur de fond de la piste du curseur */
-}
-
-.as-container::-webkit-scrollbar-thumb {
-  background-color: #585555; /* Couleur du curseur */
-  border-radius: 6px; /* Rayon de bordure du curseur */
+  flex-wrap: wrap; /* Permettre le passage à la ligne */
+  justify-content: flex-start; /* Alignez les éléments à gauche */
 }
 
 .rectangle button {
@@ -79,6 +61,7 @@
   width: 30px; /* Taille de l'image */
   height: auto;
 }
+
 @keyframes App-logo-spin {
   from {
     transform: rotate(0deg);

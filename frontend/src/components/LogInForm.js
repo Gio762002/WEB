@@ -3,19 +3,41 @@ import React, { useState } from 'react';
 import { TextField, Button, Grid } from '@material-ui/core';
 import { useNavigate } from 'react-router-dom';
 
+<<<<<<< HEAD
 function LogInForm( {onLogin} ) {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+=======
+function LogInForm({ onAuthenticated }) {
+  const [username, setUsername] = useState();
+  const [password, setPassword] = useState();
+>>>>>>> 83f57792cbdda01f79068857f756d8dfa23a8991
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const navigate = useNavigate();
 
   const handleSubmitLogIn = async event => {
     event.preventDefault();
-    await logIn(username, password);  
+    // Vérification du nom d'utilisateur et du mot de passe
+    if (username === 'omayma' && password === 'omayma') {
+      await logIn(username, password);
+    } else {
+      setError('Nom d\'utilisateur ou mot de passe incorrect.');
+      setSuccess('');
+    }
   };
 
   const logIn = async (username, password) => {
+<<<<<<< HEAD:frontend/src/LogInForm.js
+    // Simuler une authentification réussie
+    setTimeout(() => {
+      setSuccess('Authentification réussie !');
+      setError('');
+      onAuthenticated();
+    }, 1000);
+  };
+
+=======
     const response = await fetch('/api/auth/signin', {
       method: 'POST',
       headers: {
@@ -42,8 +64,9 @@ function LogInForm( {onLogin} ) {
     }
   }
   
+>>>>>>> 599bfd24e358f1ea150b43ab42302de08a7cef46:frontend/src/components/LogInForm.js
   return (
-    <form style={{ width: '100%' }}>
+    <form style={{ width: '100%' }} onSubmit={handleSubmitLogIn}>
       <Grid container spacing={2}>
         <Grid item xs={12}>
           <TextField 
@@ -65,7 +88,7 @@ function LogInForm( {onLogin} ) {
           />
         </Grid>
         <Grid item xs={12}>
-          <Button variant="contained" color="primary" onClick={handleSubmitLogIn} fullWidth>
+          <Button type="submit" variant="contained" color="primary" fullWidth>
             Submit
           </Button>
         </Grid>
