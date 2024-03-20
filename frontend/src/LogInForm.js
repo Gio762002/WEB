@@ -3,45 +3,33 @@ import React, { useState } from 'react';
 import { TextField, Button, Grid } from '@material-ui/core';
 
 function LogInForm({ onAuthenticated }) {
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
+  const [username, setUsername] = useState();
+  const [password, setPassword] = useState();
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
 
   const handleSubmitLogIn = async event => {
     event.preventDefault();
-    await logIn(username, password);  
+    // Vérification du nom d'utilisateur et du mot de passe
+    if (username === 'omayma' && password === 'omayma') {
+      await logIn(username, password);
+    } else {
+      setError('Nom d\'utilisateur ou mot de passe incorrect.');
+      setSuccess('');
+    }
   };
 
   const logIn = async (username, password) => {
-    const response = await fetch('/api/auth/signin', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({ username, password })
-    });
-  
-    if (response.ok) {
-      const data = await response.json();
-      setSuccess('Authentification réussie !',data);
+    // Simuler une authentification réussie
+    setTimeout(() => {
+      setSuccess('Authentification réussie !');
       setError('');
-      // Appeler la fonction onAuthenticated pour rediriger vers la page AjoutAs
       onAuthenticated();
-    } else {
-      try {
-        const errorData = await response.json();
-        setError(errorData.message);
-        setSuccess('');
-      } catch (error) {
-        setError('Une erreur est survenue lors de la communication avec le serveur.');
-        setSuccess('');
-      }
-    }
-  }
-  
+    }, 1000);
+  };
+
   return (
-    <form style={{ width: '100%' }}>
+    <form style={{ width: '100%' }} onSubmit={handleSubmitLogIn}>
       <Grid container spacing={2}>
         <Grid item xs={12}>
           <TextField 
@@ -63,7 +51,7 @@ function LogInForm({ onAuthenticated }) {
           />
         </Grid>
         <Grid item xs={12}>
-          <Button variant="contained" color="primary" onClick={handleSubmitLogIn} fullWidth>
+          <Button type="submit" variant="contained" color="primary" fullWidth>
             Submit
           </Button>
         </Grid>
