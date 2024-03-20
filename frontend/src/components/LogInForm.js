@@ -12,13 +12,7 @@ function LogInForm( {onLogin} ) {
 
   const handleSubmitLogIn = async event => {
     event.preventDefault();
-    // Vérification du nom d'utilisateur et du mot de passe
-    if (username === 'omayma' && password === 'omayma') {
-      await logIn(username, password);
-    } else {
-      setError('Nom d\'utilisateur ou mot de passe incorrect.');
-      setSuccess('');
-    }
+    await logIn(username, password);  
   };
 
   const logIn = async (username, password) => {
