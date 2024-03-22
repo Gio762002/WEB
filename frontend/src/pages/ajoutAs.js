@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { Button, Grid, AppBar, Toolbar, Typography, Select, MenuItem, Popper, Paper, ClickAwayListener } from '@material-ui/core';
 import routerImage from '../routeurss.png'; // Importez votre image de routeur
 import '../App.css';
@@ -144,46 +144,45 @@ function AjoutAs() {
     console.log("Informations sur les interfaces du routeur:", routerInterfaces);
   };
 
-  const henderButtons = (container) => {
-    console.log('called henderButtons');
-    return container.buttons.map(button => {
-        let buttonElement;
-        if (button.type === "add") {
-          console.log('add button');
-          buttonElement = (
-            <Button 
-              variant="outlined" 
-              color="primary"
-              onClick={() => createNewRouter(container.id)}
-              size="small" // Taille du bouton réduite
-              key={button.id}
-            >
-              {`+`}
-            </Button>
-          );
-        } else if (button.type === "routeur") {
-          buttonElement = (
-            <Button 
-              variant="contained" 
-              color="secondary"
-              onClick={(event) => handleRouterButtonClick(event, button.id)}
-              style={{ position: 'relative' }}
-              size="small" // Taille du bouton réduite
-              key={button.id}
-            >
-              <img src={routerImage} alt={` ${button.id}`} className="router-image" />
-              <span style={{ position: 'absolute', top: '5px', right: '4px' }}>{button.id}</span>
-            </Button>
-          );
-        }
-      return (
-        <div key={button.id}>
-          {buttonElement}
-        </div>
-      );
-    })
-  };
-
+  // const henderButtons = (container) => {
+  //   console.log('called henderButtons');
+  //   return container.buttons.map(button => {
+  //       let buttonElement;
+  //       if (button.type === "add") {
+  //         console.log('add button');
+  //         buttonElement = (
+  //           <Button 
+  //             variant="outlined" 
+  //             color="primary"
+  //             onClick={() => createNewRouter(container.id)}
+  //             size="small" // Taille du bouton réduite
+  //             // key={button.id}
+  //           >
+  //             {`+`}
+  //           </Button>
+  //         );
+  //       } else if (button.type === "routeur") {
+  //         buttonElement = (
+  //           <Button 
+  //             variant="contained" 
+  //             color="secondary"
+  //             onClick={(event) => handleRouterButtonClick(event, button.id)}
+  //             style={{ position: 'relative' }}
+  //             size="small" // Taille du bouton réduite
+  //             // key={button.id}
+  //           >
+  //             <img src={routerImage} alt={` ${button.id}`} className="router-image" />
+  //             <span style={{ position: 'absolute', top: '5px', right: '4px' }}>{button.id}</span>
+  //           </Button>
+  //         );
+  //       }
+  //     return (
+  //       <div key={button.id}>
+  //         {buttonElement}
+  //       </div>
+  //     );
+  //   })
+  // };
 
   return (
     <div className="App">
@@ -221,7 +220,7 @@ function AjoutAs() {
         {asData.map(container => (
           <div key={container.id} className="as-container">
             <div className="rectangle">
-              {/* {container.buttons.map(button => (
+              { container.buttons.map(button => (
                 <div key={button.id}>
                   {button.type === "routeur" ? (
                     <Button 
@@ -245,8 +244,7 @@ function AjoutAs() {
                     </Button>
                   )}
                 </div>
-              ))} */
-              henderButtons(container)
+              ))
               }
             </div>
           </div>
