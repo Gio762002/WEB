@@ -11,23 +11,66 @@ function AjoutAs() {
   const [routerInterfaces, setRouterInterfaces] = useState([]); // Interfaces du routeur sélectionné
   const [anchorEl, setAnchorEl] = useState(null); // Élément d'ancrage pour le Popper
   const [open, setOpen] = useState(false); // État d'ouverture du Popper
+  const [allrouters, setAllrouters] = useState([]); // Tous les routeurs
   const [otherRouters, setOtherRouters] = useState([]); // Autres routeurs
   const [routerCount, setRouterCount] = useState(1); // Compteur de routeurs
+  const [asCount, setAsCount] = useState(1); // Compteur d'AS
 
-  const RouterCounter = () => {
+  const RouterCount = () => {
     setRouterCount(routerCount + 1);
   };
+  const AsCount = () => {
+    setAsCount(prevData => prevData + 1);
+  };
 
-  // Ajouter un routeur dans l'AS
-  const addRouterButton = (containerIndex,) => {
+  // Créer une nouvelle AS dans le projet actuel
+  const createNewAS = () => {
+    const newAS = {
+      id: asCount,
+      igp : '',
+      routers : [],
+      links: [],
+      buttons: [{id:0, type: "add"}],
+    }
+    AsCount();
+    setAsData(prevData => [...prevData, newAS]);
+  };
+
+  // Créer un nouveau routeur et ajouter à l'AS
+  const createNewRouter = (containerIndex,) => {
+    const newRouter = {
+      id: routerCount,
+      name: `Routeur ${routerCount}`,
+      position: '',
+      protocol: '',
+      loopback: '',
+      interfaces:  {1:'interfaceEthernet0/0', 2:'interfaceEthernet0/1', 3:'interfaceSerial0/0'},
+      interfacestatus: {1:'down', 2:'down', 3:'down'},
+      interfaceip: {1:'', 2:'', 3:''},
+    };
+    RouterCount();
+    setAllrouters(prevRouters => [...prevRouters, newRouter]);
+
     setAsData(prevData => {
       const updatedData = [...prevData];
       const asDataItem = updatedData[containerIndex];
-      RouterCounter();
       asDataItem.buttons.push({ id: routerCount, type: "routeur" });
       return updatedData;
     });
-  };
+  }
+
+  // Ajouter un routeur dans l'AS
+  // const addRouterButton = (containerIndex,) => {
+  //   setAsData(prevData => {
+  //     const updatedData = [...prevData];
+  //     const asDataItem = updatedData[containerIndex];
+  //     RouterCount();
+  //     asDataItem.buttons.push({ id: routerCount, type: "routeur" });
+  //     return updatedData;
+  //   });
+  // };
+
+
 
   // Créer un nouveau projet
   const createNewProject = () => {
@@ -70,17 +113,6 @@ function AjoutAs() {
     }
   };
 
-  // Créer une nouvelle AS dans le projet actuel
-  const createNewAS = () => {
-    setAsData(prevData => [
-      ...prevData,
-      {
-        id: prevData.length,
-        asNumber: prevData.length + 1,
-        buttons: [{ id: routerCount, type: "normal" }]
-      }
-    ]);
-  };
 
   // Afficher le nom du routeur sélectionné
   const handleRouterButtonClick = (event, routerId) => {
@@ -111,6 +143,47 @@ function AjoutAs() {
     // Vous pouvez implémenter ici la logique pour afficher les informations sur les interfaces du routeur
     console.log("Informations sur les interfaces du routeur:", routerInterfaces);
   };
+
+  const henderButtons = (container) => {
+    console.log('called henderButtons');
+    return container.buttons.map(button => {
+        let buttonElement;
+        if (button.type === "add") {
+          console.log('add button');
+          buttonElement = (
+            <Button 
+              variant="outlined" 
+              color="primary"
+              onClick={() => createNewRouter(container.id)}
+              size="small" // Taille du bouton réduite
+              key={button.id}
+            >
+              {`+`}
+            </Button>
+          );
+        } else if (button.type === "routeur") {
+          buttonElement = (
+            <Button 
+              variant="contained" 
+              color="secondary"
+              onClick={(event) => handleRouterButtonClick(event, button.id)}
+              style={{ position: 'relative' }}
+              size="small" // Taille du bouton réduite
+              key={button.id}
+            >
+              <img src={routerImage} alt={` ${button.id}`} className="router-image" />
+              <span style={{ position: 'absolute', top: '5px', right: '4px' }}>{button.id}</span>
+            </Button>
+          );
+        }
+      return (
+        <div key={button.id}>
+          {buttonElement}
+        </div>
+      );
+    })
+  };
+
 
   return (
     <div className="App">
@@ -148,7 +221,7 @@ function AjoutAs() {
         {asData.map(container => (
           <div key={container.id} className="as-container">
             <div className="rectangle">
-              {container.buttons.map(button => (
+              {/* {container.buttons.map(button => (
                 <div key={button.id}>
                   {button.type === "routeur" ? (
                     <Button 
@@ -163,16 +236,18 @@ function AjoutAs() {
                     </Button>
                   ) : (
                     <Button 
-                      variant="contained" 
+                      variant="outlined" 
                       color="primary"
-                      onClick={() => addRouterButton(container.id)}
+                      onClick={() => createNewRouter(container.id)}
                       size="small" // Taille du bouton réduite
                     >
                       {`AS ${container.asNumber}`}
                     </Button>
                   )}
                 </div>
-              ))}
+              ))} */
+              henderButtons(container)
+              }
             </div>
           </div>
         ))}
