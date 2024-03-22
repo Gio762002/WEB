@@ -31,7 +31,7 @@ function AjoutAs() {
       igp : '',
       routers : [],
       links: [],
-      buttons: [{id:0, type: "add"}],
+      buttons: [{id:0, type: "As"},{id:100, type: "add"}],
     }
     
     setAsData(prevData => [...prevData, newAS]);
@@ -43,6 +43,7 @@ function AjoutAs() {
     setAsData(prevData => {
       const updatedData = [...prevData];
       const asDataItem = updatedData[containerIndex];
+      const addButton = asDataItem.buttons.pop();
       asDataItem.buttons.push({
         type: "routeur",
         id: routerCount,
@@ -54,6 +55,7 @@ function AjoutAs() {
         interfacestatus: {1:'down', 2:'down', 3:'down'},
         interfaceip: {1:'', 2:'', 3:''},
         });
+      asDataItem.buttons.push(addButton);
       RouterCount();
       return updatedData;
     });
@@ -136,15 +138,23 @@ function AjoutAs() {
     console.log('called henderButtons');
     return container.buttons.map(button => {
         let buttonElement;
-        if (button.type === "add") {
-          console.log('add button');
+        if (button.type === "As") {
+          buttonElement = (
+            <Button 
+              variant="contained" 
+              color="primary"
+              size="small" // Taille du bouton réduite
+            >
+              {`AS ${container.asNumber}`}
+            </Button>
+          );
+        } else if (button.type === "add") {
           buttonElement = (
             <Button 
               variant="outlined" 
               color="primary"
               onClick={() => addRouterButton(container.id)}
               size="small" // Taille du bouton réduite
-              // key={button.id}
             >
               {`+`}
             </Button>
@@ -157,7 +167,6 @@ function AjoutAs() {
               onClick={(event) => handleRouterButtonClick(event, button.id)}
               style={{ position: 'relative' }}
               size="small" // Taille du bouton réduite
-              // key={button.id}
             >
               <img src={routerImage} alt={` ${button.id}`} className="router-image" />
               <span style={{ position: 'absolute', top: '5px', right: '4px' }}>{button.id}</span>
