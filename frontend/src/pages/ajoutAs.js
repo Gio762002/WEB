@@ -14,7 +14,7 @@ function AjoutAs() {
   const [allrouters, setAllrouters] = useState([]); // Tous les routeurs
   const [otherRouters, setOtherRouters] = useState([]); // Autres routeurs
   const [routerCount, setRouterCount] = useState(1); // Compteur de routeurs
-  const [asCount, setAsCount] = useState(1); // Compteur d'AS
+  const [asCount, setAsCount] = useState(0); // Compteur d'AS
 
   const RouterCount = () => {
     setRouterCount(routerCount + 1);
@@ -27,7 +27,7 @@ function AjoutAs() {
   const createNewAS = () => {
     const newAS = {
       id: asCount,
-      asNumber: asCount,
+      asNumber: asCount+1,
       igp : '',
       routers : [],
       links: [],
@@ -38,11 +38,11 @@ function AjoutAs() {
   };
 
   // Créer un nouveau routeur et ajouter à l'AS
-  const createNewRouter = (containerIndex,) => {
+  const createNewRouter = (containerIndex) => {
     const newRouter = {
       id: routerCount,
       name: `Routeur ${routerCount}`,
-      position: '',
+      position: containerIndex,
       protocol: '',
       loopback: '',
       interfaces:  {1:'interfaceEthernet0/0', 2:'interfaceEthernet0/1', 3:'interfaceSerial0/0'},
@@ -51,27 +51,19 @@ function AjoutAs() {
     };
     RouterCount();
     setAllrouters(prevRouters => [...prevRouters, newRouter]);
-
-    setAsData(prevData => {
-      const updatedData = [...prevData];
-      const asDataItem = updatedData[containerIndex-1];
-      asDataItem.buttons.push({ id: routerCount, type: "routeur" });
-      console.log(asDataItem.buttons);
-      return updatedData;
-    });
   }
 
   // Ajouter un routeur dans l'AS
-  // const addRouterButton = (containerIndex,) => {
-  //   setAsData(prevData => {
-  //     const updatedData = [...prevData];
-  //     const asDataItem = updatedData[containerIndex];
-  //     RouterCount();
-  //     asDataItem.buttons.push({ id: routerCount, type: "routeur" });
-  //     return updatedData;
-  //   });
-  // };
-
+  const addRouterButton = (containerIndex,) => {
+    createNewRouter(containerIndex);
+    setAsData(prevData => {
+      const updatedData = [...prevData];
+      const asDataItem = updatedData[containerIndex];
+      RouterCount();
+      asDataItem.buttons.push({ id: routerCount, type: "routeur" });
+      return updatedData;
+    });
+  };
 
 
   // Créer un nouveau projet
@@ -239,7 +231,7 @@ function AjoutAs() {
                     <Button 
                       variant="outlined" 
                       color="primary"
-                      onClick={() => createNewRouter(container.id)}
+                      onClick={() => addRouterButton(container.id)}
                       size="small" // Taille du bouton réduite
                     >
                       {`AS ${container.asNumber}`}
