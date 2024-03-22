@@ -61,50 +61,13 @@ function AjoutAs() {
     });
   };
 
-
-  // Créer un nouveau projet
-  const createNewProject = () => {
-    const newProject = {
-      id: projects.length + 1,
-      name: `Projet ${projects.length + 1}`,
-      asData: [] // Données de l'AS pour ce projet
-    };
-    setProjects(prevProjects => [...prevProjects, newProject]);
-    setSelectedProject(newProject.name); // Sélectionner le nouveau projet
-    setAsData([]); // Réinitialiser les données de l'AS
+  // Gérer le clic sur le bouton du nom d'un routeur
+  const handleRouterNameClick = (routerId) => {
+    // Vous pouvez implémenter ici la logique pour afficher les informations sur les interfaces du routeur
+    console.log("Informations sur les interfaces du routeur:", routerInterfaces);
   };
 
-  // Effacer un projet
-  const clearProject = () => {
-    setProjects([]);
-    setSelectedProject('');
-    setAsData([]);
-  };
-
-  // Enregistrer le projet actuel
-  const saveProject = () => {
-    const projectIndex = projects.findIndex(project => project.name === selectedProject);
-    if (projectIndex !== -1) {
-      const updatedProjects = [...projects];
-      updatedProjects[projectIndex].asData = asData;
-      setProjects(updatedProjects);
-      alert('Projet enregistré avec succès!');
-    }
-  };
-
-  // Gérer le changement de projet sélectionné
-  const handleProjectChange = (event) => {
-    setSelectedProject(event.target.value);
-    const project = projects.find(proj => proj.name === event.target.value);
-    if (project) {
-      setAsData(project.asData);
-    } else {
-      setAsData([]);
-    }
-  };
-
-
-  // Afficher le nom du routeur sélectionné
+    // Afficher le nom du routeur sélectionné
   const handleRouterButtonClick = (event, routerId) => {
     setSelectedRouter(routerId);
     setAnchorEl(event.currentTarget);
@@ -121,17 +84,6 @@ function AjoutAs() {
     // Simuler la récupération des interfaces du routeur sélectionné (remplacer par la logique appropriée)
     const interfaces = ['interfaceEthernet0/0', 'interfaceEthernet0/1', 'interfaceSerial0/0'];
     setRouterInterfaces(interfaces);
-  };
-
-  // Fermer le Popper
-  const handleClose = () => {
-    setOpen(false);
-  };
-
-  // Gérer le clic sur le bouton du nom d'un routeur
-  const handleRouterNameClick = (routerId) => {
-    // Vous pouvez implémenter ici la logique pour afficher les informations sur les interfaces du routeur
-    console.log("Informations sur les interfaces du routeur:", routerInterfaces);
   };
 
   const henderButtons = (container) => {
@@ -180,6 +132,53 @@ function AjoutAs() {
       );
     })
   };
+
+  // Créer un nouveau projet
+  const createNewProject = () => {
+    const newProject = {
+      id: projects.length + 1,
+      name: `Projet ${projects.length + 1}`,
+      asData: [] // Données de l'AS pour ce projet
+    };
+    setProjects(prevProjects => [...prevProjects, newProject]);
+    setSelectedProject(newProject.name); // Sélectionner le nouveau projet
+    setAsData([]); // Réinitialiser les données de l'AS
+  };
+
+  // Effacer un projet
+  const clearProject = () => {
+    setProjects([]);
+    setSelectedProject('');
+    setAsData([]);
+  };
+
+  // Enregistrer le projet actuel
+  const saveProject = () => {
+    const projectIndex = projects.findIndex(project => project.name === selectedProject);
+    if (projectIndex !== -1) {
+      const updatedProjects = [...projects];
+      updatedProjects[projectIndex].asData = asData;
+      setProjects(updatedProjects);
+      alert('Projet enregistré avec succès!');
+    }
+  };
+
+  // Gérer le changement de projet sélectionné
+  const handleProjectChange = (event) => {
+    setSelectedProject(event.target.value);
+    const project = projects.find(proj => proj.name === event.target.value);
+    if (project) {
+      setAsData(project.asData);
+    } else {
+      setAsData([]);
+    }
+  };
+
+  // Fermer le Popper
+  const handleClose = () => {
+    setOpen(false);
+  };
+
 
   return (
     <div className="App">
