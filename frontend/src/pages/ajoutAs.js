@@ -1,97 +1,242 @@
-import React, { useState } from 'react';
-import { Grid } from '@material-ui/core';
-import routerImage from '../routeurss.png'; // Importez votre image de routeur
-import '../App.css';
+import React, { useState, useEffect } from 'react';
+import { Button } from '@material-ui/core';
+import routeurImage from './routeurss.png'; // Importez votre image de routeur
 
-function AjoutAs() {
-  const [routers, setRouters] = useState([]); // Liste des routeurs avec leurs positions
-  const [activeRouterIndex, setActiveRouterIndex] = useState(null); // Indice du routeur actuellement sélectionné pour le déplacement
-  const [connections, setConnections] = useState([]); // Liste des connexions entre les routeurs
+function App() {
+  const [points, setPoints] = useState([]);
+  const [lines, setLines] = useState([]);
+  const [selectedPoints, setSelectedPoints] = useState([]);
+  const [mode, setMode] = useState('draw'); // 'draw', 'move', 'watch'
+  const [draggingPointIndex, setDraggingPointIndex] = useState(null); 
+  const [initialMousePosition, setInitialMousePosition] = useState({ x: 0, y: 0 }); 
 
-  // Fonction pour ajouter un nouveau routeur
-  const addRouter = (event) => {
-    if (event.target.tagName === 'BUTTON') { // Vérifier si le clic provient du bouton "Ajouter un routeur"
-      const newRouter = {
-        id: routers.length,
-        x: event.clientX - 25, // Positionner le centre de l'image à l'emplacement du clic
-        y: event.clientY - 25,
+  useEffect(() => {
+    if (selectedPoints.length === 2) {
+      const [startIndex, endIndex] = selectedPoints;
+      const startRouter = points[startIndex];
+      const endRouter = points[endIndex];
+  
+      if (startRouter.connections === 3) {
+        alert(`Pas d'interfaces disponibles pour le routeur R${startIndex + 1}.`);
+        return;
+      }
+  
+      if (endRouter.connections === 3) {
+        alert(`Pas d'interfaces disponibles pour le routeur R${endIndex + 1}.`);
+        return;
+      }
+  
+      const newLine = {
+        start: startRouter,
+        end: endRouter
       };
-      setRouters(prevRouters => [...prevRouters, newRouter]);
-      setActiveRouterIndex(routers.length); // Sélectionner le nouveau routeur pour le déplacement immédiat
+  
+      setLines(prevLines => [...prevLines, newLine]);
+  
+      // Mettre à jour la disponibilité des points liés
+      const updatedPoints = points.map((point, index) => {
+        if (index === startIndex || index === endIndex) {
+          return { ...point, available: false, connections: (point.connections || 0) + 1 };
+        }
+        return point;
+      });
+  
+      setPoints(updatedPoints);
+      setSelectedPoints([]);
     }
-  };
+  }, [selectedPoints, points, lines]);
 
-  // Fonction pour mettre à jour la position d'un routeur lors du déplacement
-  const updateRouterPosition = (event) => {
-    if (activeRouterIndex !== null) {
-      const newRouters = [...routers];
-      newRouters[activeRouterIndex] = {
-        ...newRouters[activeRouterIndex],
-        x: event.clientX - 25, // Positionner le centre de l'image à l'emplacement du curseur
-        y: event.clientY - 25,
-      };
-      setRouters(newRouters);
-    }
-  };
+  useEffect(() => {
+    const canvas = document.getElementById('canvas');
+    const ctx = canvas.getContext('2d');
+    ctx.clearRect(0, 0, window.innerWidth, window.innerHeight);
+    lines.forEach(line => {
+      ctx.beginPath();
+      ctx.moveTo(line.start.x, line.start.y);
+      ctx.lineTo(line.end.x, line.end.y);
+      ctx.strokeStyle = 'black';
+      ctx.lineWidth = 2;
+      ctx.stroke();
+    });
+  }, [lines]);
 
-  // Fonction pour sélectionner un routeur pour le déplacement
-  const selectRouter = (index) => {
-    setActiveRouterIndex(index);
-  };
-
-  // Fonction pour désélectionner le routeur actif
-  const deselectRouter = () => {
-    setActiveRouterIndex(null);
-  };
-
-  // Fonction pour relier deux routeurs
-  const connectRouters = (event) => {
-    const selectedRouterIndex = parseInt(event.target.dataset.index);
-    if (!isNaN(selectedRouterIndex)) {
-      if (activeRouterIndex !== null && activeRouterIndex !== selectedRouterIndex) {
-        const newConnections = [...connections, { from: activeRouterIndex, to: selectedRouterIndex }];
-        setConnections(newConnections);
+  const handlePointClick = (index) => {
+    if (mode === 'move') {
+      if (draggingPointIndex === null) {
+        setDraggingPointIndex(index);
+        setInitialMousePosition({ x: points[index].x, y: points[index].y });
+      } else {
+        setDraggingPointIndex(null);
+      }
+    } else if (mode === 'draw') {
+      // Vérifier si le point sélectionné est déjà sélectionné
+      if (!selectedPoints.includes(index)) {
+        if (selectedPoints.length < 2) {
+          setSelectedPoints(prevSelected => [...prevSelected, index]);
+        } else {
+          setSelectedPoints([index]);
+        }
       }
     }
   };
+  
+  const handleMouseMove = (event) => {
+    if (draggingPointIndex !== null) {
+      // Récupère l'élément canvas ou le conteneur parent des routeurs
+      const canvas = document.getElementById('canvas');
+  
+      // Calcule la position relative en soustrayant la position du coin supérieur gauche du canvas
+      const rect = canvas.getBoundingClientRect();
+      const relativeX = event.clientX - rect.left;
+      const relativeY = event.clientY - rect.top + 35;
+  
+      const updatedPoints = [...points];
+      updatedPoints[draggingPointIndex] = {
+        x: relativeX,
+        y: relativeY,
+        connections: points[draggingPointIndex].connections // Conserver le nombre de connexions
+      };
+      setPoints(updatedPoints);
+  
+      // Mise à jour des lignes lorsque le point est déplacé
+      const updatedLines = lines.map(line => {
+        if (line.start.x === initialMousePosition.x && line.start.y === initialMousePosition.y) {
+          return { ...line, start: { x: relativeX, y: relativeY } };
+        }
+        if (line.end.x === initialMousePosition.x && line.end.y === initialMousePosition.y) {
+          return { ...line, end: { x: relativeX, y: relativeY } };
+        }
+        return line;
+      });
+      setLines(updatedLines);
+    }
+  };
+  
+
+  const handleMouseUp = () => {
+    if (draggingPointIndex !== null) {
+      setDraggingPointIndex(null);
+    }
+  };
+
+  useEffect(() => {
+    document.addEventListener('mousemove', handleMouseMove);
+    document.addEventListener('mouseup', handleMouseUp);
+    return () => {
+      document.removeEventListener('mousemove', handleMouseMove);
+      document.removeEventListener('mouseup', handleMouseUp);
+    };
+  }, [draggingPointIndex]);
+
+  const handleModeChange = (selectedMode) => {
+    setMode(selectedMode);
+  };
+
+  const addRandomRouter = () => {
+    const canvas = document.getElementById('canvas');
+    const canvasWidth = canvas.width;
+    const canvasHeight = canvas.height;
+
+    // Générer un point aléatoire
+    const newPoint = {
+      x: Math.random() * (canvasWidth - 60) + 30, // Ajustez selon la taille de votre image de routeur
+      y: Math.random() * (canvasHeight - 60) + 20,
+    };
+
+    // Ajouter le nouveau point à la liste des points existants
+    setPoints(prevPoints => [...prevPoints, newPoint]);
+  };
 
   return (
-    <div className="App" onMouseMove={updateRouterPosition} onMouseDown={addRouter}>
-      <h1>Vous pouvez créer la topologie du réseau</h1>
-      <Grid container spacing={2}>
-        <Grid item>
-          <button>Ajouter un routeur</button>
-        </Grid>
-        <Grid item>
-          <button onClick={connectRouters}>Relier</button>
-        </Grid>
-      </Grid>
-      <div className="as-wrapper">
-        {connections.map((connection, index) => (
-          <svg key={index} style={{ position: 'absolute', zIndex: -1 }}>
-            <line
-              x1={routers[connection.from].x + 25}
-              y1={routers[connection.from].y + 25}
-              x2={routers[connection.to].x + 25}
-              y2={routers[connection.to].y + 25}
-              style={{ stroke: 'black', strokeWidth: 2 }}
+    <div style={{ display: 'grid', gridTemplateColumns: 'auto 1fr', height: '100vh' }}>
+      <div style={{ backgroundColor: '#f0f0f0', padding: '20px' }}>
+        <Button 
+          onClick={addRandomRouter} 
+          variant="text" 
+          color="primary"
+          style={{ marginBottom: '10px', width: '100%' }}
+        >
+          Ajouter Routeur
+        </Button>
+        <Button 
+          onClick={() => handleModeChange('draw')} 
+          variant={mode === 'draw' ? 'contained' : 'text'} 
+          color="primary"
+          style={{ marginBottom: '10px', width: '100%' }}
+        >
+          Relier les routeurs
+        </Button>
+        <Button 
+          onClick={() => handleModeChange('move')} 
+          variant={mode === 'move' ? 'contained' : 'text'} 
+          color="primary"
+          style={{ marginBottom: '10px', width: '100%' }}
+        >
+          Déplacer les routeus 
+        </Button>
+        <Button 
+          onClick={() => handleModeChange('watch')} 
+          variant={mode === 'watch' ? 'contained' : 'text'} 
+          color="primary"
+          style={{ marginBottom: '10px', width: '100%' }}
+        >
+          Exporter congiguration
+        </Button>
+      </div>
+      <div style={{ position: 'relative' }}>
+      {points.map((point, index) => (
+          <React.Fragment key={index}>
+            <img
+              src={routeurImage} 
+              style={{
+                position: 'absolute',
+                left: point.x,
+                top: point.y,
+                width: '60px',
+                height: '40px',
+                cursor: mode === 'draw' ? 'pointer' : 'move'
+              }}
+              onMouseDown={() => handlePointClick(index)}
+              alt="routeur"
             />
-          </svg>
+            {Array.from({ length: 3 }, (_, i) => (
+              <div
+                key={i}
+                className="control-point"
+                style={{
+                  position: 'absolute',
+                  left: point.x + 5 + i * 20,
+                  top: point.y + 22,
+                  width: '10px',
+                  height: '7px',
+                  backgroundColor: point.connections && point.connections > i ? 'red' : 'greenyellow',
+                  borderRadius: '50%',
+                  cursor: 'pointer'
+                }}
+              ></div>
+            ))}
+            <div
+              style={{
+                position: 'absolute',
+                left: point.x + 20,
+                top: point.y + 40,
+                color: 'black',
+                fontSize: '15px'
+              }}
+            >
+              {`R${index + 1}`}
+            </div>
+          </React.Fragment>
         ))}
-        {routers.map((router, index) => (
-          <img
-            key={index}
-            src={routerImage}
-            alt={`Routeur ${index}`}
-            className="router-image"
-            style={{ position: 'absolute', left: router.x, top: router.y, cursor: 'move' }}
-            onMouseDown={() => selectRouter(index)}
-            onMouseUp={deselectRouter}
-          />
-        ))}
+        <canvas 
+          id="canvas" 
+          width={window.innerWidth - 250} 
+          height={window.innerHeight - 50} 
+          style={{ border: '2px solid black', margin: '20px' }}>
+        </canvas>
       </div>
     </div>
   );
 }
 
-export default AjoutAs;
+export default App;
