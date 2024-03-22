@@ -27,6 +27,7 @@ function AjoutAs() {
   const createNewAS = () => {
     const newAS = {
       id: asCount,
+      asNumber: asCount,
       igp : '',
       routers : [],
       links: [],
@@ -53,8 +54,9 @@ function AjoutAs() {
 
     setAsData(prevData => {
       const updatedData = [...prevData];
-      const asDataItem = updatedData[containerIndex];
+      const asDataItem = updatedData[containerIndex-1];
       asDataItem.buttons.push({ id: routerCount, type: "routeur" });
+      console.log(asDataItem.buttons);
       return updatedData;
     });
   }
@@ -221,7 +223,7 @@ function AjoutAs() {
           <div key={container.id} className="as-container">
             <div className="rectangle">
               { container.buttons.map(button => (
-                <div key={button.id}>
+                <div key={button.name}>
                   {button.type === "routeur" ? (
                     <Button 
                       variant="contained" 
