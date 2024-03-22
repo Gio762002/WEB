@@ -12,15 +12,21 @@ function AjoutAs() {
   const [anchorEl, setAnchorEl] = useState(null); // Élément d'ancrage pour le Popper
   const [open, setOpen] = useState(false); // État d'ouverture du Popper
   const [otherRouters, setOtherRouters] = useState([]); // Autres routeurs
+  const [routerCount, setRouterCount] = useState(1); // Compteur de routeurs
+
+  const RouterCount = () => {
+    setRouterCount(routerCount + 1);
+  };
 
   // Ajouter un routeur dans l'AS
   const addRouterButton = (containerIndex) => {
     setAsData(prevData => {
       const updatedData = [...prevData];
       const asDataItem = updatedData[containerIndex];
-      const newRouterId = asDataItem.routerCount + 1;
+      const newRouterId = routerCount;
       asDataItem.routerCount++;
       asDataItem.buttons.push({ id: newRouterId, type: "routeur" });
+      RouterCount();
       return updatedData;
     });
   };
