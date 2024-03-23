@@ -216,9 +216,6 @@ function App() {
         <Button onClick={() => handleModeChange('newAS')} variant={mode === 'newAS' ? 'contained' : 'text'} color="primary" style={{ marginBottom: '10px', width: '100%' }}>
           Nouvel AS
         </Button>
-        <Button onClick={() => handleModeChange('watch')} variant={mode === 'watch' ? 'contained' : 'text'} color="primary" style={{ marginBottom: '10px', width: '100%' }}>
-          Exporter configuration
-        </Button>
         <TableContainer component={Paper} style={{ marginTop: '20px' }}>
           <Table>
             <TableHead>
@@ -237,6 +234,9 @@ function App() {
             </TableBody>
           </Table>
         </TableContainer>
+        <Button onClick={() => handleModeChange('watch')} variant={mode === 'watch' ? 'contained' : 'text'} color="primary" style={{ marginTop: '30px', marginBottom: '10px', width: '100%' }}>
+          Exporter configuration
+        </Button>
       </div>
       <div style={{ position: 'relative' }}>
         {points.map((point, index) => (
