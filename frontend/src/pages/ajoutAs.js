@@ -16,6 +16,38 @@ function App() {
   const [currentProject, setCurrentProject] = useState('Projet 1'); // Projet actuellement sélectionné
   const [anchorEl, setAnchorEl] = useState(null); // Élément d'ancrage pour le menu
   const [selectedProjectName, setSelectedProjectName] = useState('Projet 1');
+  // Ajoutez un état pour stocker le type de configuration sélectionné
+const [configType, setConfigType] = useState('');
+
+// Fonction pour gérer le clic sur le bouton "Exporter configuration"
+// Fonction pour gérer le clic sur le bouton "Exporter configuration"
+const handleExportConfiguration = () => {
+  // Vérifiez s'il y a des AS créés
+  if (Object.keys(asRouters).length === 0) {
+    alert("Aucun AS n'a été créé.");
+    return;
+  }
+
+  // Affichez les AS créés dans un message
+  const availableAS = Object.keys(asRouters).map(as => `AS ${as}`).join(', ');
+  alert(`AS créés : ${availableAS}`);
+
+  // Demandez à l'utilisateur de choisir un AS
+  const selectedAS = prompt('Choisissez un AS (par exemple, AS 1) :');
+  if (!selectedAS || !asRouters[selectedAS.replace('AS ', '')]) {
+    alert("Veuillez choisir un AS valide.");
+    return;
+  }
+
+  // Une fois qu'un AS est choisi, demandez le type de configuration (RIP ou OSPF)
+  const selectedConfigType = prompt('Choisissez le type de configuration (RIP ou OSPF) :');
+  if (selectedConfigType && (selectedConfigType.toLowerCase() === 'rip' || selectedConfigType.toLowerCase() === 'ospf')) {
+    setConfigType(selectedConfigType.toLowerCase());
+    alert(`Les routeurs de l'AS ${selectedAS} sont connectés via ${selectedConfigType.toUpperCase()}.`);
+  } else {
+    alert('Veuillez choisir une option valide (RIP ou OSPF).');
+  }
+};
 
   // Basculer vers le projet par défaut au début
   useEffect(() => {
@@ -362,9 +394,9 @@ function App() {
               </TableBody>
             </Table>
           </TableContainer>
-          <Button onClick={() => handleModeChange('watch')} variant={mode === 'watch' ? 'contained' : 'text'} color="primary" style={{ marginTop: '100px', marginBottom: '10px', width: '100%' }}>
-            Exporter configuration
-          </Button>
+          <Button onClick={handleExportConfiguration} variant={mode === 'watch' ? 'contained' : 'text'} color="primary" style={{ marginTop: '100px', marginBottom: '10px', width: '100%' }}>
+  Exporter configuration
+</Button>
         </div>
         <div style={{ position: 'relative' }}>
           {points.map((point, index) => (
