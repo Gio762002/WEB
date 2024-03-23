@@ -1,41 +1,41 @@
 import React, { useState, useEffect } from 'react';
-import { Button, Dialog, DialogTitle, DialogContent, DialogActions } from '@material-ui/core';
+import { Button, TableContainer, Table, TableHead, TableBody, TableCell, TableRow, Paper } from '@material-ui/core';
 import routeurImage from './routeurss.png'; // Importez votre image de routeur
 
 function App() {
   const [points, setPoints] = useState([]);
   const [lines, setLines] = useState([]);
   const [selectedPoints, setSelectedPoints] = useState([]);
-  const [mode, setMode] = useState('draw'); // 'draw', 'move', 'watch', 'group'
-  const [draggingPointIndex, setDraggingPointIndex] = useState(null);
-  const [initialMousePosition, setInitialMousePosition] = useState({ x: 0, y: 0 });
-  const [showDialog, setShowDialog] = useState(false); // état pour afficher la boîte de dialogue
-  const [configuration, setConfiguration] = useState(null); // état pour stocker la configuration choisie
-  const [groupingShapes, setGroupingShapes] = useState([]); // état pour stocker les informations sur les formes de regroupement
+  const [mode, setMode] = useState('draw'); // 'draw', 'move', 'watch', 'newAS'
+  const [draggingPointIndex, setDraggingPointIndex] = useState(null); 
+  const [initialMousePosition, setInitialMousePosition] = useState({ x: 0, y: 0 }); 
+  const [asRouters, setAsRouters] = useState({});
+  const [newAsName, setNewAsName] = useState('');
+  const [newAsRouters, setNewAsRouters] = useState([]);
 
   useEffect(() => {
     if (selectedPoints.length === 2) {
       const [startIndex, endIndex] = selectedPoints;
       const startRouter = points[startIndex];
       const endRouter = points[endIndex];
-
+  
       if (startRouter.connections === 3) {
         alert(`Pas d'interfaces disponibles pour le routeur R${startIndex + 1}.`);
         return;
       }
-
+  
       if (endRouter.connections === 3) {
         alert(`Pas d'interfaces disponibles pour le routeur R${endIndex + 1}.`);
         return;
       }
-
+  
       const newLine = {
         start: startRouter,
         end: endRouter
       };
-
+  
       setLines(prevLines => [...prevLines, newLine]);
-
+  
       // Mettre à jour la disponibilité des points liés
       const updatedPoints = points.map((point, index) => {
         if (index === startIndex || index === endIndex) {
@@ -43,7 +43,7 @@ function App() {
         }
         return point;
       });
-
+  
       setPoints(updatedPoints);
       setSelectedPoints([]);
     }
@@ -53,6 +53,8 @@ function App() {
     const canvas = document.getElementById('canvas');
     const ctx = canvas.getContext('2d');
     ctx.clearRect(0, 0, window.innerWidth, window.innerHeight);
+
+    // Dessiner les lignes entre les routeurs
     lines.forEach(line => {
       ctx.beginPath();
       ctx.moveTo(line.start.x, line.start.y);
@@ -61,7 +63,41 @@ function App() {
       ctx.lineWidth = 2;
       ctx.stroke();
     });
-  }, [lines]);
+
+    // Dessiner les cercles autour des AS
+    let colorIndex = 0;
+    const colors = ['#FF5733', '#33FF57', '#5733FF', '#FF33A8', '#33A8FF', '#A8FF33', '#FF3333', '#3333FF', '#33FFA8'];
+    Object.entries(asRouters).forEach(([as, routers]) => {
+      // Trouver les coordonnées minimales et maximales des routeurs de l'AS
+      let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
+      routers.forEach(routerIndex => {
+        const router = points[routerIndex];
+        minX = Math.min(minX, router.x);
+        minY = Math.min(minY, router.y);
+        maxX = Math.max(maxX, router.x);
+        maxY = Math.max(maxY, router.y);
+      });
+
+      // Dessiner le cercle englobant avec un espace supplémentaire autour de chaque routeur
+      const centerX = (minX + maxX) / 2;
+      const centerY = (minY + maxY) / 2;
+      const radiusX = (Math.max(maxX - minX, maxY - minY) / 2) + 30; // Ajout de 30 pour un ovale plus grand
+      const radiusY = (Math.max(maxX - minX, maxY - minY) / 2) + 20; // Ajout de 20 pour un ovale plus grand
+
+      ctx.beginPath();
+      ctx.ellipse(centerX, centerY, radiusX, radiusY, 0, 0, 2 * Math.PI);
+      ctx.strokeStyle = colors[colorIndex % colors.length]; // Couleur du cercle
+      ctx.lineWidth = 2;
+      ctx.stroke();
+
+      // Étiquette de l'AS
+      ctx.font = '15px Arial';
+      ctx.fillStyle = colors[colorIndex % colors.length];
+      ctx.fillText(`AS ${as}`, centerX - 20, centerY + 5);
+
+      colorIndex++;
+    });
+  }, [lines, asRouters, points]);
 
   const handlePointClick = (index) => {
     if (mode === 'move') {
@@ -80,12 +116,8 @@ function App() {
           setSelectedPoints([index]);
         }
       }
-    } else if (mode === 'group') {
-      // Récupérer les points sélectionnés pour le regroupement
-      const selectedRouters = selectedPoints.map(idx => points[idx]);
-      // Ajouter la forme de regroupement avec les points sélectionnés
-      setGroupingShapes(prevShapes => [...prevShapes, selectedRouters]);
-      setSelectedPoints([]); // Réinitialiser les points sélectionnés
+    } else if (mode === 'newAS') {
+      setNewAsRouters(prevRouters => [...prevRouters, index]);
     }
   };
 
@@ -93,12 +125,12 @@ function App() {
     if (draggingPointIndex !== null) {
       // Récupère l'élément canvas ou le conteneur parent des routeurs
       const canvas = document.getElementById('canvas');
-
+  
       // Calcule la position relative en soustrayant la position du coin supérieur gauche du canvas
       const rect = canvas.getBoundingClientRect();
       const relativeX = event.clientX - rect.left;
       const relativeY = event.clientY - rect.top + 35;
-
+  
       const updatedPoints = [...points];
       updatedPoints[draggingPointIndex] = {
         x: relativeX,
@@ -106,7 +138,7 @@ function App() {
         connections: points[draggingPointIndex].connections // Conserver le nombre de connexions
       };
       setPoints(updatedPoints);
-
+  
       // Mise à jour des lignes lorsque le point est déplacé
       const updatedLines = lines.map(line => {
         if (line.start.x === initialMousePosition.x && line.start.y === initialMousePosition.y) {
@@ -120,8 +152,9 @@ function App() {
       setLines(updatedLines);
     }
   };
-
-  const handleMouseUp = () => {
+  
+  const handleMouseUp
+  = () => {
     if (draggingPointIndex !== null) {
       setDraggingPointIndex(null);
     }
@@ -137,10 +170,10 @@ function App() {
   }, [draggingPointIndex]);
 
   const handleModeChange = (selectedMode) => {
-    if (selectedMode === 'watch') {
-      setShowDialog(true); // Afficher la boîte de dialogue lorsque le mode est changé en "watch"
-    } else {
-      setMode(selectedMode);
+    setMode(selectedMode);
+    if (selectedMode === 'newAS') {
+      setNewAsName(prompt('Nom de l\'AS :'));
+      setNewAsRouters([]);
     }
   };
 
@@ -151,58 +184,59 @@ function App() {
 
     // Générer un point aléatoire
     const newPoint = {
-      x: Math.random() * (canvasWidth - 60) + 30,
+      x: Math.random() * (canvasWidth - 60) + 30, // Ajustez selon la taille de votre image de routeur
       y: Math.random() * (canvasHeight - 60) + 20,
-      connections: 0 // Initialiser le nombre de connexions à 0
     };
-  
+
     // Ajouter le nouveau point à la liste des points existants
     setPoints(prevPoints => [...prevPoints, newPoint]);
   };
 
+  useEffect(() => {
+    setAsRouters((prevAsRouters) => {
+      return {
+        ...prevAsRouters,
+        [newAsName]: newAsRouters
+      };
+    });
+  }, [newAsName, newAsRouters]);
+
   return (
     <div style={{ display: 'grid', gridTemplateColumns: 'auto 1fr', height: '100vh' }}>
       <div style={{ backgroundColor: '#f0f0f0', padding: '20px' }}>
-        <Button
-          onClick={addRandomRouter}
-          variant="text"
-          color="primary"
-          style={{ marginBottom: '10px', width: '100%' }}
-        >
+        <Button onClick={addRandomRouter} variant="text" color="primary" style={{ marginBottom: '10px', width: '100%' }}>
           Ajouter Routeur
         </Button>
-        <Button
-          onClick={() => handleModeChange('draw')}
-          variant={mode === 'draw' ? 'contained' : 'text'}
-          color="primary"
-          style={{ marginBottom: '10px', width: '100%' }}
-        >
+        <Button onClick={() => handleModeChange('draw')} variant={mode === 'draw' ? 'contained' : 'text'} color="primary" style={{ marginBottom: '10px', width: '100%' }}>
           Relier les routeurs
         </Button>
-        <Button
-          onClick={() => handleModeChange('move')}
-          variant={mode === 'move' ? 'contained' : 'text'}
-          color="primary"
-          style={{ marginBottom: '10px', width: '100%' }}
-        >
+        <Button onClick={() => handleModeChange('move')} variant={mode === 'move' ? 'contained' : 'text'} color="primary" style={{ marginBottom: '10px', width: '100%' }}>
           Déplacer les routeurs
         </Button>
-        <Button
-          onClick={() => handleModeChange('watch')}
-          variant={mode === 'watch' ? 'contained' : 'text'}
-          color="primary"
-          style={{ marginBottom: '10px', width: '100%' }}
-        >
+        <Button onClick={() => handleModeChange('newAS')} variant={mode === 'newAS' ? 'contained' : 'text'} color="primary" style={{ marginBottom: '10px', width: '100%' }}>
+          Nouvel AS
+        </Button>
+        <Button onClick={() => handleModeChange('watch')} variant={mode === 'watch' ? 'contained' : 'text'} color="primary" style={{ marginBottom: '10px', width: '100%' }}>
           Exporter configuration
         </Button>
-        <Button
-          onClick={() => handleModeChange('group')} // Activer le mode de regroupement
-          variant={mode === 'group' ? 'contained' : 'text'} // Mettre en surbrillance le bouton lorsque le mode de regroupement est activé
-          color="primary"
-          style={{ marginBottom: '10px', width: '100%' }}
-        >
-          Regrouper les AS
-        </Button>
+        <TableContainer component={Paper} style={{ marginTop: '20px' }}>
+          <Table>
+            <TableHead>
+              <TableRow>
+                <TableCell>AS</TableCell>
+                <TableCell>Routeurs</TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {Object.entries(asRouters).map(([as, routers], index) => (
+                <TableRow key={index}>
+                  <TableCell>{as}</TableCell>
+                  <TableCell>{routers.map(routerIndex => `R${routerIndex + 1}`).join(', ')}</TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </TableContainer>
       </div>
       <div style={{ position: 'relative' }}>
         {points.map((point, index) => (
@@ -249,51 +283,13 @@ function App() {
             </div>
           </React.Fragment>
         ))}
-        {groupingShapes.map((shape, index) => (
-          <div
-            key={index}
-            style={{
-              position: 'absolute',
-              left: shape[0].x,
-              top: shape[0].y,
-              width: Math.abs(shape[1].x - shape[0].x),
-              height: Math.abs(shape[1].y - shape[0].y),
-              border: '2px dashed blue', // Styling de la forme de regroupement
-              pointerEvents: 'none', // Empêcher l'interaction avec la forme de regroupement
-              zIndex: 999 // Assurez-vous que la forme de regroupement est au-dessus des routeurs
-            }}
-          ></div>
-        ))}
         <canvas
           id="canvas"
           width={window.innerWidth - 250}
           height={window.innerHeight - 50}
-          style={{ border: '2px solid black', margin: '20px' }}
-        ></canvas>
+          style={{ border: '2px solid black', margin: '20px' }}>
+        </canvas>
       </div>
-      <Dialog open={showDialog} onClose={() => setShowDialog(false)}>
-        <DialogTitle>Tu veux configurer avec quoi ?</DialogTitle>
-        <DialogContent>
-          <Button onClick={() => {
-            setConfiguration('RIP');
-            setShowDialog(false);
-          }}>RIP</Button>
-          <Button onClick={() => {
-            setConfiguration('OSPF');
-            setShowDialog(false);
-          }}>OSPF</Button>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setShowDialog(false)} color="primary">
-            OK
-          </Button>
-        </DialogActions>
-      </Dialog>
-      {configuration && (
-        <div style={{ position: 'fixed', bottom: '10px', right: '10px', backgroundColor: 'white', padding: '10px', border: '1px solid black', borderRadius: '5px' }}>
-          Les routeurs sont connectés via {configuration}
-        </div>
-      )}
     </div>
   );
 }
