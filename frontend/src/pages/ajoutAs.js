@@ -213,10 +213,10 @@ function App() {
         <Button onClick={() => handleModeChange('move')} variant={mode === 'move' ? 'contained' : 'text'} color="primary" style={{ marginBottom: '10px', width: '100%' }}>
           Déplacer les routeurs
         </Button>
-        <Button onClick={() => handleModeChange('newAS')} variant={mode === 'newAS' ? 'contained' : 'text'} color="primary" style={{ marginBottom: '10px', width: '100%' }}>
+        <Button onClick={() => handleModeChange('newAS')} variant={mode === 'newAS' ? 'contained' : 'text'} color="primary" style={{ marginTop: '30px',marginBottom: '0px', width: '100%' }}>
           Nouvel AS
         </Button>
-        <TableContainer component={Paper} style={{ marginTop: '20px' }}>
+        <TableContainer component={Paper} style={{ marginTop: '0px' }}>
           <Table>
             <TableHead>
               <TableRow>
@@ -234,7 +234,7 @@ function App() {
             </TableBody>
           </Table>
         </TableContainer>
-        <Button onClick={() => handleModeChange('watch')} variant={mode === 'watch' ? 'contained' : 'text'} color="primary" style={{ marginTop: '30px', marginBottom: '10px', width: '100%' }}>
+        <Button onClick={() => handleModeChange('watch')} variant={mode === 'watch' ? 'contained' : 'text'} color="primary" style={{ marginTop: '100px', marginBottom: '10px', width: '100%' }}>
           Exporter configuration
         </Button>
       </div>
