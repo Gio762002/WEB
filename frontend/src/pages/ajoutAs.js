@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Button, TableContainer, Table, TableHead, TableBody, TableCell, TableRow, Paper } from '@material-ui/core';
+import { Button, TableContainer, Table, TableHead, TableBody, TableCell, TableRow, Paper, Menu, MenuItem } from '@material-ui/core';
 import routeurImage from './routeurss.png'; // Importez votre image de routeur
 
 function App() {
@@ -7,11 +7,108 @@ function App() {
   const [lines, setLines] = useState([]);
   const [selectedPoints, setSelectedPoints] = useState([]);
   const [mode, setMode] = useState('draw'); // 'draw', 'move', 'watch', 'newAS'
-  const [draggingPointIndex, setDraggingPointIndex] = useState(null); 
-  const [initialMousePosition, setInitialMousePosition] = useState({ x: 0, y: 0 }); 
+  const [draggingPointIndex, setDraggingPointIndex] = useState(null);
+  const [initialMousePosition, setInitialMousePosition] = useState({ x: 0, y: 0 });
   const [asRouters, setAsRouters] = useState({});
   const [newAsName, setNewAsName] = useState('');
   const [newAsRouters, setNewAsRouters] = useState([]);
+  const [projects, setProjects] = useState([{ name: 'Projet 1', data: { points: [], lines: [], asRouters: {} } }]);
+  const [currentProject, setCurrentProject] = useState('Projet 1'); // Projet actuellement sélectionné
+  const [anchorEl, setAnchorEl] = useState(null); // Élément d'ancrage pour le menu
+  const [selectedProjectName, setSelectedProjectName] = useState('Projet 1');
+
+  // Basculer vers le projet par défaut au début
+  useEffect(() => {
+    switchProject('Projet 1');
+  }, []);
+
+
+
+// Sauvegarder le projet 
+
+  // Fonction pour créer un nouveau projet
+  const createNewProject = () => {
+    const projectName = prompt('Nom du nouveau projet :');
+    if (projectName) {
+      setProjects(prevProjects => [...prevProjects, { name: projectName, data: { points : [], lines : [], asRouters: {}} }]);
+    }
+  };
+
+  // Fonction pour basculer entre les projets
+// Fonction pour basculer entre les projets
+const switchProject = (projectName) => {
+  // Sauvegarder les données du projet actuel avant de basculer vers le nouveau projet
+  if (currentProject) {
+    const currentProjectIndex = projects.findIndex(project => project.name === currentProject);
+    if (currentProjectIndex !== -1) {
+      const updatedProjects = [...projects];
+      updatedProjects[currentProjectIndex] = {
+        name: currentProject,
+        data: { points, lines, asRouters }
+      };
+      setProjects(updatedProjects);
+    }
+  }
+
+  const projectData = projects.find(project => project.name === projectName);
+  if (projectData) {
+    setPoints(projectData.data.points || []);
+    setLines(projectData.data.lines || []);
+    setAsRouters(projectData.data.asRouters || {});
+    setCurrentProject(projectName);
+    setSelectedProjectName(projectName); // Ajouter cette ligne pour définir le nom du projet sélectionné
+  }
+};
+
+  // Afficher le menu principal
+  const handleMenuClick = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  // Fermer le menu principal
+  const handleMenuClose = () => {
+    setAnchorEl(null);
+  };
+
+  // Afficher le menu de sélection de projet
+  const handleProjectSelect = (projectName) => {
+    handleMenuClose();
+    switchProject(projectName);
+  };
+
+  useEffect(() => {
+    // Charger les projets depuis le stockage local ou toute autre source de données
+    const storedProjects = localStorage.getItem('projects');
+    if (storedProjects) {
+      setProjects(JSON.parse(storedProjects));
+    }
+  }, []);
+
+  useEffect(() => {
+    // Enregistrer les projets dans le stockage local à chaque modification
+    localStorage.setItem('projects', JSON.stringify(projects));
+  }, [projects]);
+
+
+  useEffect(() => {
+    // Sauvegarder les données du projet actuel avant de basculer vers le nouveau projet
+    if (currentProject) {
+      const currentProjectIndex = projects.findIndex(project => project.name === currentProject);
+      if (currentProjectIndex !== -1) {
+        const updatedProjects = [...projects];
+        updatedProjects[currentProjectIndex] = {
+          name: currentProject,
+          data: { points, lines, asRouters }
+        };
+        setProjects(updatedProjects);
+      } else {
+        setProjects(prevProjects => [
+          ...prevProjects,
+          { name: currentProject, data: { points, lines, asRouters } }
+        ]);
+      }
+    }
+  }, [currentProject]);
 
   useEffect(() => {
     if (selectedPoints.length === 2) {
@@ -201,8 +298,39 @@ function App() {
     });
   }, [newAsName, newAsRouters]);
 
+
   return (
-    <div style={{ display: 'grid', gridTemplateColumns: 'auto 1fr', height: '100vh' }}>
+    <div style={{ display: 'flex', flexDirection: 'column', height: '100vh' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', backgroundColor: 'rgba(63, 81, 189, 1)', color: 'white', padding: '20px', borderBottom: '2px solid #ccc' }}>
+    <div>
+      <Button onClick={createNewProject} variant="text" color="inherit" style={{ marginRight: '30px' }}>
+        Nouveau projet
+      </Button>
+      <Button onClick={handleMenuClick} variant="text" color="inherit" style={{ marginRight: '30px' }}>
+        Sélectionner projet
+      </Button>
+      <Menu
+        id="project-menu"
+        anchorEl={anchorEl}
+        keepMounted
+        open={Boolean(anchorEl)}
+        onClose={handleMenuClose}
+        style={{ marginTop: '50px'}} 
+      >
+        {projects.map((project, index) => (
+          <MenuItem key={index} onClick={() => handleProjectSelect(project.name)}>{project.name}</MenuItem>
+        ))}
+      </Menu>
+      {/* Autres options de menu */}
+    </div>
+    <div>
+      {/* Autres boutons alignés à droite */}
+    </div>
+  </div>
+      <div style={{ position: 'absolute', top: '130px', left: '250px', fontFamily: 'Arial', fontSize: '24px', fontWeight: 'bold' }}>
+      {selectedProjectName}
+    </div>
+      <div style={{ display: 'grid', gridTemplateColumns: 'auto 1fr', height: '100vh' }}>
       <div style={{ backgroundColor: '#f0f0f0', padding: '20px' }}>
         <Button onClick={addRandomRouter} variant="text" color="primary" style={{ marginBottom: '10px', width: '100%' }}>
           Ajouter Routeur
@@ -286,10 +414,11 @@ function App() {
         <canvas
           id="canvas"
           width={window.innerWidth - 250}
-          height={window.innerHeight - 50}
+          height={window.innerHeight - 130}
           style={{ border: '2px solid black', margin: '20px' }}>
         </canvas>
       </div>
+    </div>
     </div>
   );
 }
