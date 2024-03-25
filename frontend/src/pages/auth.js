@@ -3,7 +3,7 @@ import React from 'react';
 import { Container } from '@material-ui/core';
 // import SignInForm from '../components/SignInForm';
 // import LogInForm from '../components/LogInForm';
-import logo from '../GNS3.png';
+import logo from '../components/GNS3.png';
 import AuthGoogle from '../components/AuthGoogle';
 
 function Auth({onLogin}) {
