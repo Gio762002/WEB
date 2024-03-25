@@ -9,7 +9,7 @@ function App() {
 
   const handleLogin = () => {
     console.log(Login);
-    <Navigate to="/topo"/>
+    <Navigate to="/"/>
     return setLogin(true);
   };
   
@@ -18,7 +18,7 @@ function App() {
       <Routes>
         <Route path="/admin" element={<Auth onLogin={handleLogin} />} />
         <Route path="/" element={ <AjoutAs />} />
-        <Route path="*" element={<Navigate to="/" />} />
+        <Route path="*" element={<Navigate to="/admin" />} />
       </Routes>
     </Router>
 )};
