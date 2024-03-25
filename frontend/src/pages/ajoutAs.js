@@ -33,7 +33,7 @@ function App() {
         start: startRouter,
         end: endRouter
       };
-  
+      // TODO : BD IP adresse distribution  
       setLines(prevLines => [...prevLines, newLine]);
   
       // Mettre à jour la disponibilité des points liés

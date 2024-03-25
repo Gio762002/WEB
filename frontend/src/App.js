@@ -16,8 +16,8 @@ function App() {
   return (
     <Router>
       <Routes>
-        <Route path="/" element={<Auth onLogin={handleLogin} />} />
-        <Route path="/topo" element={ <AjoutAs />} />
+        <Route path="/admin" element={<Auth onLogin={handleLogin} />} />
+        <Route path="/" element={ <AjoutAs />} />
         <Route path="*" element={<Navigate to="/" />} />
       </Routes>
     </Router>
