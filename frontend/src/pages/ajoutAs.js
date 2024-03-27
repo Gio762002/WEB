@@ -165,6 +165,7 @@ const handleExportConfiguration = () => {
       };
       // TODO : BD IP adresse distribution  
       setLines(prevLines => [...prevLines, newLine]);
+      console.log(lines);
   
       // Mettre à jour la disponibilité des points liés
       const updatedPoints = points.map((point, index) => {

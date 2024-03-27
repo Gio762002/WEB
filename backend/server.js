@@ -21,6 +21,12 @@ const API_PORT = process.env.API_PORT || 3001;
 // now we should configure the API to use bodyParser and look for JSON data in the request body
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
+app.use(cors());
+app.use((req, res, next) => {
+  res.setHeader('Cross-Origin-Opener-Policy', 'same-origin');
+  next();
+});
+
 
 mongoose.connect("mongodb://localhost:3010/test");
 var db = mongoose.connection;
