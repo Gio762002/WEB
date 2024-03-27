@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Button, TableContainer, Table, TableHead, TableBody, TableCell, TableRow, Paper, Menu, MenuItem } from '@material-ui/core';
 import routeurImage from './routeurss.png'; // Importez votre image de routeur
+import routerImage_chose from './routeurss_choose.png'; // Importez votre image de routeur
 
 function App() {
   const [points, setPoints] = useState([]);
@@ -16,6 +17,7 @@ function App() {
   const [currentProject, setCurrentProject] = useState('Projet 1'); // Projet actuellement sélectionné
   const [anchorEl, setAnchorEl] = useState(null); // Élément d'ancrage pour le menu
   const [selectedProjectName, setSelectedProjectName] = useState('Projet 1');
+  const [selectedRouter, setSelectedRouter] = useState(null); // Routeur sélectionné pour le changement d'image
   // Ajoutez un état pour stocker le type de configuration sélectionné
 const [configType, setConfigType] = useState('');
 
@@ -23,6 +25,7 @@ const [configType, setConfigType] = useState('');
 // Fonction pour gérer le clic sur le bouton "Exporter configuration"
 const handleExportConfiguration = () => {
   // Vérifiez s'il y a des AS créés
+  setSelectedRouter(null);
   if (Object.keys(asRouters).length === 0) {
     alert("Aucun AS n'a été créé.");
     return;
@@ -78,7 +81,7 @@ const handleExportConfiguration = () => {
       }
     }
 
-    const projectData = projects.find(project => project.name === projectName);
+  const projectData = projects.find(project => project.name === projectName);
     if (projectData) {
       setPoints(projectData.data.points || []);
       setLines(projectData.data.lines || []);
@@ -90,16 +93,19 @@ const handleExportConfiguration = () => {
 
   // Afficher le menu principal
   const handleMenuClick = (event) => {
+    setSelectedRouter(null);
     setAnchorEl(event.currentTarget);
   };
 
   // Fermer le menu principal
   const handleMenuClose = () => {
+    setSelectedRouter(null);
     setAnchorEl(null);
   };
 
   // Afficher le menu de sélection de projet
   const handleProjectSelect = (projectName) => {
+    setSelectedRouter(null);
     handleMenuClose();
     switchProject(projectName);
   };
@@ -137,11 +143,11 @@ const handleExportConfiguration = () => {
     }
   }, [currentProject]);
 
-  useEffect(() => {
-    if (selectedPoints.length === 2) {
-      const [startIndex, endIndex] = selectedPoints;
-      const startRouter = points[startIndex];
-      const endRouter = points[endIndex];
+    useEffect(() => {
+      if (selectedPoints.length === 2) {
+        const [startIndex, endIndex] = selectedPoints;
+        const startRouter = points[startIndex];
+        const endRouter = points[endIndex];
   
       if (startRouter.connections === 3) {
         alert(`Pas d'interfaces disponibles pour le routeur R${startIndex + 1}.`);
@@ -223,10 +229,12 @@ const handleExportConfiguration = () => {
         colorIndex++;
       });
     }, [lines, asRouters, points]);
-  
+    
+
     const handlePointClick = (index) => {
       if (mode === 'move') {
         if (draggingPointIndex === null) {
+          setSelectedRouter(null);
           setDraggingPointIndex(index);
           setInitialMousePosition({ x: points[index].x, y: points[index].y });
         } else {
@@ -234,6 +242,7 @@ const handleExportConfiguration = () => {
         }
       } else if (mode === 'draw') {
         // Vérifier si le point sélectionné est déjà sélectionné
+        setSelectedRouter(index);
         if (!selectedPoints.includes(index)) {
           if (selectedPoints.length < 2) {
             setSelectedPoints(prevSelected => [...prevSelected, index]);
@@ -242,6 +251,7 @@ const handleExportConfiguration = () => {
           }
         }
       } else if (mode === 'newAS') {
+        setSelectedRouter(null);
         // Vérifier si le routeur est déjà dans un AS
         const isRouterInAs = Object.values(asRouters).some(asRoutersArray => asRoutersArray.includes(index));
         if (!isRouterInAs) {
@@ -253,6 +263,7 @@ const handleExportConfiguration = () => {
     };
   
     const handleMouseMove = (event) => {
+      setSelectedRouter(null);
       if (draggingPointIndex !== null) {
         // Récupère l'élément canvas ou le conteneur parent des routeurs
         const canvas = document.getElementById('canvas');
@@ -269,7 +280,7 @@ const handleExportConfiguration = () => {
           connections: points[draggingPointIndex].connections // Conserver le nombre de connexions
         };
         setPoints(updatedPoints);
-    
+        
         // Mise à jour des lignes lorsque le point est déplacé
         const updatedLines = lines.map(line => {
           if (line.start.x === initialMousePosition.x && line.start.y === initialMousePosition.y) {
@@ -402,7 +413,7 @@ const handleExportConfiguration = () => {
           {points.map((point, index) => (
             <React.Fragment key={index}>
               <img
-                src={routeurImage}
+                src={index === selectedRouter ? routerImage_chose: routeurImage}
                 style={{
                   position: 'absolute',
                   left: point.x,
@@ -412,7 +423,7 @@ const handleExportConfiguration = () => {
                   cursor: mode === 'draw' ? 'pointer' : 'move'
                 }}
                 onMouseDown={() => handlePointClick(index)}
-                alt="routeur"
+                alt="routeur" 
               />
               {Array.from({ length: 3 }, (_, i) => (
                 <div
