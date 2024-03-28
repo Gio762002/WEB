@@ -16,6 +16,7 @@ function App() {
   const [initialMousePosition, setInitialMousePosition] = useState({ x: 0, y: 0 });
   const [asRouters, setAsRouters] = useState({});
   const [newAsName, setNewAsName] = useState('');
+  const [asNumbers, setAsNumbers] = useState([]);
   const [newAsRouters, setNewAsRouters] = useState([]);
   // États pour les projets et le projet actuel sélectionné
   const [projects, setProjects] = useState([{ name: 'Projet 1', data: { points: [], lines: [], asRouters: {} } }]);
@@ -119,7 +120,6 @@ function App() {
       const [startIndex, endIndex] = selectedPoints;
       const startRouter = points[startIndex];
       const endRouter = points[endIndex];
-
       if (startRouter.connections === 3) {
         alert(`Pas d'interfaces disponibles pour le routeur R${startIndex + 1}.`);
         return;
@@ -132,11 +132,14 @@ function App() {
 
       const newLine = {
         start: startRouter,
-        end: endRouter
+        end: endRouter,
+        connectedRouter : [startIndex+1, endIndex+1],
+        connectedInterface : [(startRouter.connections|| 0) + 1, (endRouter.connections|| 0) + 1],
       };
       // TODO : BD IP adresse distribution  
       setLines(prevLines => [...prevLines, newLine]);
-      console.log(lines);
+      console.log('connected routers:', newLine.connectedRouter);
+      console.log('connected interfaces:',newLine.connectedInterface);
 
       // Mettre à jour la disponibilité des points liés
       const updatedPoints = points.map((point, index) => {
@@ -212,9 +215,10 @@ function App() {
       }
     } else if (mode === 'draw') {
       // Vérifier si le point sélectionné est déjà sélectionné
-      setSelectedRouter(index);
+      
       if (!selectedPoints.includes(index)) {
-        if (selectedPoints.length < 2) {
+        setSelectedRouter(index); 
+        if (selectedPoints.length  < 2) {
           setSelectedPoints(prevSelected => [...prevSelected, index]);
         } else {
           setSelectedPoints([index]);
@@ -287,7 +291,13 @@ function App() {
   const handleModeChange = (selectedMode) => {
     setMode(selectedMode);
     if (selectedMode === 'newAS') {
-      setNewAsName(prompt('Nom de l\'AS :'));
+      let asID = prompt('Numéro de l\'AS :');
+        if ((isNaN(asID) || asID === '' || asID === null ) || asNumbers.includes(asID)) {
+          alert('Veuillez saisir un numéro d\'AS valide.');
+        } else {
+          setNewAsName(asID);
+          setAsNumbers(prevAsNumbers => [...prevAsNumbers, asID]);
+        }
       setNewAsRouters([]);
     }
   };
