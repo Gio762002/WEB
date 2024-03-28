@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { Button, TableContainer, Table, TableHead, TableBody, TableCell, TableRow, Paper, Menu, MenuItem } from '@material-ui/core';
 import routeurImage from './routeurss.png'; // Importez votre image de routeur
 import routerImage_chose from './routeurss_choose.png'; // Importez votre image de routeur
-
+import FormDialog from '../components/askAS';
 
 function App() {
   // États pour les points, lignes et points sélectionnés
@@ -292,7 +292,7 @@ function App() {
     setMode(selectedMode);
     if (selectedMode === 'newAS') {
       let asID = prompt('Numéro de l\'AS :');
-        if ((isNaN(asID) || asID === '' || asID === null ) || asNumbers.includes(asID)) {
+        if ((isNaN(asID) || asID === '' || asID === null ) && asNumbers.includes(asID)) {
           alert('Veuillez saisir un numéro d\'AS valide.');
         } else {
           setNewAsName(asID);
@@ -402,9 +402,10 @@ const handleExportConfiguration = () => {
           <Button onClick={() => handleModeChange('move')} variant={mode === 'move' ? 'contained' : 'text'} color="primary" style={{ marginBottom: '10px', width: '100%' }}>
             Déplacer les routeurs
           </Button>
-          <Button onClick={() => handleModeChange('newAS')} variant={mode === 'newAS' ? 'contained' : 'text'} color="primary" style={{ marginTop: '30px',marginBottom: '0px', width: '100%' }}>
+          {/* <Button onClick={() => handleModeChange('newAS')} variant={mode === 'newAS' ? 'contained' : 'text'} color="primary" style={{ marginTop: '30px',marginBottom: '0px', width: '100%' }}>
             Nouvel AS
-          </Button>
+          </Button> */}
+          <FormDialog mode={mode} handleModeChange={handleModeChange}/>
           <TableContainer component={Paper} style={{ marginTop: '0px' }}>
             <Table>
               <TableHead>
