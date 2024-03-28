@@ -15,9 +15,13 @@ function App() {
   const [draggingPointIndex, setDraggingPointIndex] = useState(null);
   const [initialMousePosition, setInitialMousePosition] = useState({ x: 0, y: 0 });
   const [asRouters, setAsRouters] = useState({});
-  const [newAsName, setNewAsName] = useState('');
-  const [asNumbers, setAsNumbers] = useState([]);
   const [newAsRouters, setNewAsRouters] = useState([]);
+  //component form dialog
+  const [asNumbers, setAsNumbers] = useState([]); // tous les numéros utilisés pour les AS
+  const [asId, setAsId] = useState('');
+  const [protocol, setProtocol] = useState('');
+  const [ipRange, setIpRange] = useState('');
+
   // États pour les projets et le projet actuel sélectionné
   const [projects, setProjects] = useState([{ name: 'Projet 1', data: { points: [], lines: [], asRouters: {} } }]);
   const [currentProject, setCurrentProject] = useState('Projet 1');
@@ -290,16 +294,24 @@ function App() {
   // Gestionnaire de changement de mode
   const handleModeChange = (selectedMode) => {
     setMode(selectedMode);
-    if (selectedMode === 'newAS') {
-      let asID = prompt('Numéro de l\'AS :');
-        if ((isNaN(asID) || asID === '' || asID === null ) && asNumbers.includes(asID)) {
-          alert('Veuillez saisir un numéro d\'AS valide.');
-        } else {
-          setNewAsName(asID);
-          setAsNumbers(prevAsNumbers => [...prevAsNumbers, asID]);
-        }
-      setNewAsRouters([]);
-    }
+    // if (selectedMode === 'newAS') {
+      // let asID = prompt('Numéro de l\'AS :');
+      //   if ((isNaN(asID) || asID === '' || asID === null ) && asNumbers.includes(asID)) {
+      //     alert('Veuillez saisir un numéro d\'AS valide.');
+      //   } else {
+      //     setNewAsid(asID);
+      //     setAsNumbers(prevAsNumbers => [...prevAsNumbers, asID]);
+      //   }
+      // setNewAsRouters([]);
+    // }
+  };
+
+  const handleDialogInfo = (id, range, protocol) => {
+    setAsId(id);
+    setIpRange(range);
+    setProtocol(protocol);
+    setAsNumbers(prevAsNumbers => [...prevAsNumbers, asId]);
+    setNewAsRouters([]);
   };
 
   // Fonction pour ajouter un routeur aléatoire
@@ -323,10 +335,10 @@ function App() {
     setAsRouters((prevAsRouters) => {
       return {
         ...prevAsRouters,
-        [newAsName]: newAsRouters
+        [asId]: newAsRouters
       };
     });
-  }, [newAsName, newAsRouters]);
+  }, [asId, newAsRouters]);
 
 // Fonction pour gérer le clic sur le bouton "Exporter configuration"
 const handleExportConfiguration = () => {
@@ -405,7 +417,7 @@ const handleExportConfiguration = () => {
           {/* <Button onClick={() => handleModeChange('newAS')} variant={mode === 'newAS' ? 'contained' : 'text'} color="primary" style={{ marginTop: '30px',marginBottom: '0px', width: '100%' }}>
             Nouvel AS
           </Button> */}
-          <FormDialog mode={mode} handleModeChange={handleModeChange}/>
+          <FormDialog mode={mode} handleModeChange={handleModeChange} handleDialogInfo={handleDialogInfo}/>
           <TableContainer component={Paper} style={{ marginTop: '0px' }}>
             <Table>
               <TableHead>
