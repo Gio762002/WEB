@@ -1,9 +1,9 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, { useState, useEffect } from 'react';
-import { Button, TableContainer, Table, TableHead, TableBody, TableCell, TableRow, Paper, Menu, MenuItem } from '@material-ui/core';
+import { Button, Menu, MenuItem, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@material-ui/core';
+import React, { useEffect, useState } from 'react';
+import FormDialog from '../components/askAS';
 import routeurImage from './routeurss.png'; // Importez votre image de routeur
 import routerImage_chose from './routeurss_choose.png'; // Importez votre image de routeur
-import FormDialog from '../components/askAS';
 
 function App() {
   // États pour les points, lignes et points sélectionnés
@@ -133,8 +133,12 @@ function App() {
         return;
       }
       const connectInfo = [];
-      connectInfo.push([startIndex+1,(startRouter.connections|| 0) + 1]);
-      connectInfo.push([endIndex+1,(endRouter.connections|| 0) + 1]);
+      const info = new Map();
+      info.set('router1', [(startIndex+1),(startRouter.connections|| 0) + 1]);
+      info.set('router2', [(endIndex+1),(endRouter.connections|| 0) + 1]);
+      connectInfo.push(info);
+      // connectInfo.push([startIndex+1,(startRouter.connections|| 0) + 1]);
+      // connectInfo.push([endIndex+1,(endRouter.connections|| 0) + 1]);
       const newLine = {
         start: startRouter,
         end: endRouter,
@@ -341,14 +345,121 @@ function App() {
     console.log('AS Routers:', asRouters);
   }, [asId, newAsRouters]);
 
-// Fonction pour gérer le clic sur le bouton "Exporter configuration"
+  // Fonction pour télécharger un fichier JSON
+  function downloadJSONFile(jsonContent, fileName) {
+    const jsonString = JSON.stringify(jsonContent, null, 2);
+    const blob = new Blob([jsonString], { type: 'application/json' });
+    const element = document.createElement('a');
+    element.href = URL.createObjectURL(blob);
+    element.download = fileName;
+    document.body.appendChild(element);
+    element.click();
+    document.body.removeChild(element);
+  }
+
+  // Fonvertir les données de l'interface en un dictionnaire pour l'exportation
+  const initializeInterfaceDict = (asRouters) => {
+    const interfacesDict = {};
+    Object.values(asRouters).flat().forEach(routerIndex => {
+      const routerName = `R${parseInt(routerIndex, 10) + 1}`;
+      interfacesDict[routerName] = [];
+    });
+    console.log("Initialized Interfaces Dictionary:", interfacesDict);
+    return interfacesDict;
+  };
+
+  // Remplir le dictionnaire des interfaces avec les lignes connectées
+  const fillInterfaceDictWithLines = (interfacesDict, lines) => {
+    lines.forEach(line => {
+      line.connectInfo.forEach(connectMap => {
+        let mergedValues = [];
+        connectMap.forEach((value, key) => {
+          mergedValues = mergedValues.concat(value);
+        });
+
+        if(mergedValues.length === 4) {
+          console.log("Merged Array:", mergedValues);
+        }
+
+        const [router1Index, router1Port, router2Index, router2Port] = mergedValues;
+        const router1Name = `R${router1Index}`;
+        const router2Name = `R${router2Index}`;
+        const interface1Name = `GigabitEthernet0/${router1Port - 1}`;
+        const interface2Name = `GigabitEthernet0/${router2Port - 1}`;
+
+        if (!interfacesDict[router1Name]) {
+            interfacesDict[router1Name] = []; 
+        }
+        interfacesDict[router1Name].push({
+            name: interface1Name,
+            neighbor: router2Name,
+            neighbor_interface: interface2Name
+        });
+
+        if (!interfacesDict[router2Name]) {
+          interfacesDict[router2Name] = []; 
+        }
+        interfacesDict[router2Name].push({
+            name: interface2Name,
+            neighbor: router1Name,
+            neighbor_interface: interface1Name
+        });
+      });
+    });
+    console.log("Filled Interfaces Dictionary:", interfacesDict);
+    return interfacesDict;
+  };
+  
+  // Fonction pour gérer le clic sur le bouton "Exporter configuration"
   const handleExportConfiguration = () => {
     for (let [key, value] of AsInfo.entries()) {
       console.log(key, value);
     }
     console.log('AS Routers:', asRouters);
     console.log('Lines:', lines);
+  
+    let interfacesDict = initializeInterfaceDict(asRouters);
+    fillInterfaceDictWithLines(interfacesDict, lines);
+  
+    let networkIntent = { "AS": [] };
+
+    AsInfo.forEach((asInfo, asId) => {
+      let asEntry = {
+        "number": asInfo.id,
+        "IPrange": asInfo.range,
+        "protocol": asInfo.protocol,
+        "routers": asRouters[asId]?.map(routerIndexStr => {
+          const routerIndex = parseInt(routerIndexStr, 10);
+          const routerName = `R${routerIndex + 1}`;
+          
+          const completeInterfaces = [];
+          for (let i = 0; i < 3; i++) {
+            const interfaceName = `GigabitEthernet0/${i}`;
+            const definedInterface = interfacesDict[routerName].find(
+              iface => iface.name === interfaceName
+            );
+            if (definedInterface) {
+              completeInterfaces.push(definedInterface);
+            } else {
+              completeInterfaces.push({
+                name: interfaceName,
+                neighbor: "",
+                neighbor_interface: ""
+              });
+            }
+          }  
+          return {
+            "name": routerName,
+            "interfaces": completeInterfaces
+          };
+        }) || []
+      };
+      networkIntent.AS.push(asEntry);
+    });
+  
+    downloadJSONFile(networkIntent, "network_intent.json");
   };
+
 
 
   // Retourner le contenu JSX de l'application

@@ -1,0 +1,118 @@
+{
+  "AS": [
+    {
+      "number": "1",
+      "IPrange": "10.0.0.0",
+      "protocol": "OSPF",
+      "routers": [
+        {
+          "name": "R1",
+          "interfaces": [
+            {
+              "name": "GigabitEthernet0/0",
+              "neighbor": "R2",
+              "neighbor_interface": "GigabitEthernet0/0"
+            },
+            {
+              "name": "GigabitEthernet0/1",
+              "neighbor": "R3",
+              "neighbor_interface": "GigabitEthernet0/1"
+            },
+            {
+              "name": "GigabitEthernet0/2",
+              "neighbor": "",
+              "neighbor_interface": ""
+            }
+          ]
+        },
+        {
+          "name": "R2",
+          "interfaces": [
+            {
+              "name": "GigabitEthernet0/0",
+              "neighbor": "R1",
+              "neighbor_interface": "GigabitEthernet0/0"
+            },
+            {
+              "name": "GigabitEthernet0/1",
+              "neighbor": "R3",
+              "neighbor_interface": "GigabitEthernet0/0"
+            },
+            {
+              "name": "GigabitEthernet0/2",
+              "neighbor": "",
+              "neighbor_interface": ""
+            }
+          ]
+        },
+        {
+          "name": "R3",
+          "interfaces": [
+            {
+              "name": "GigabitEthernet0/0",
+              "neighbor": "R2",
+              "neighbor_interface": "GigabitEthernet0/1"
+            },
+            {
+              "name": "GigabitEthernet0/1",
+              "neighbor": "R1",
+              "neighbor_interface": "GigabitEthernet0/1"
+            },
+            {
+              "name": "GigabitEthernet0/2",
+              "neighbor": "R5",
+              "neighbor_interface": "GigabitEthernet0/0"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "number": "2",
+      "IPrange": "20.0.0.0",
+      "protocol": "RIP",
+      "routers": [
+        {
+          "name": "R4",
+          "interfaces": [
+            {
+              "name": "GigabitEthernet0/0",
+              "neighbor": "R5",
+              "neighbor_interface": "GigabitEthernet0/1"
+            },
+            {
+              "name": "GigabitEthernet0/1",
+              "neighbor": "",
+              "neighbor_interface": ""
+            },
+            {
+              "name": "GigabitEthernet0/2",
+              "neighbor": "",
+              "neighbor_interface": ""
+            }
+          ]
+        },
+        {
+          "name": "R5",
+          "interfaces": [
+            {
+              "name": "GigabitEthernet0/0",
+              "neighbor": "R3",
+              "neighbor_interface": "GigabitEthernet0/2"
+            },
+            {
+              "name": "GigabitEthernet0/1",
+              "neighbor": "R4",
+              "neighbor_interface": "GigabitEthernet0/0"
+            },
+            {
+              "name": "GigabitEthernet0/2",
+              "neighbor": "",
+              "neighbor_interface": ""
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
