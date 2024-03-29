@@ -345,6 +345,8 @@ function App() {
     for (let [key, value] of AsInfo.entries()) {
       console.log(key, value);
     }
+    console.log('AS Routers:', asRouters);
+    console.log('Lines:', lines);
   };
 
 

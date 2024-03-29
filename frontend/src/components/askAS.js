@@ -6,6 +6,11 @@ import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
+import Select from '@material-ui/core/Select';
+import MenuItem from '@material-ui/core/MenuItem';
+import FormControl from '@material-ui/core/FormControl';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
+import InputLabel from '@material-ui/core/InputLabel';
 
 export default function FormDialog({mode, handleModeChange, handleDialogInfo}) {
   const [open, setOpen] = React.useState(false);
@@ -47,7 +52,7 @@ export default function FormDialog({mode, handleModeChange, handleDialogInfo}) {
             type="number"
             fullWidth
             onChange={(e) => setAsId(e.target.value)}
-            inputProps={{ autoComplete: 'off' }}
+            inputProps={{ autoComplete: 'off', min: 1  }}
           />
           <TextField
             autoFocus
@@ -59,16 +64,19 @@ export default function FormDialog({mode, handleModeChange, handleDialogInfo}) {
             onChange={(e) => setIpRange(e.target.value)}
             inputProps={{ autoComplete: 'off' }}
           />
-          <TextField
-            autoFocus
-            margin="dense"
-            id="igp"
-            label="IGP Protocole"
-            type="string"
-            fullWidth
-            onChange={(e) => setProtocol(e.target.value)}
-            inputProps={{ autoComplete: 'off' }}
-          />
+          <FormControl fullWidth>
+            <InputLabel id="protocol-label">IGP Protocole</InputLabel>
+            <Select
+              labelId="protocol-label"
+              id="igp-protocol"
+              value={protocol}
+              onChange={(e) => setProtocol(e.target.value)}
+            >
+            <MenuItem value="OSPF">OSPF</MenuItem>
+            <MenuItem value="RIP">RIP</MenuItem>
+            </Select>
+          </FormControl>
+          
         </DialogContent>
         <DialogActions>
           <Button onClick={handleClose} color="primary">
