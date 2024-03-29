@@ -18,9 +18,8 @@ function App() {
   const [newAsRouters, setNewAsRouters] = useState([]);
   //component form dialog
   const [asNumbers, setAsNumbers] = useState([]); // tous les numéros utilisés pour les AS
-  const [asId, setAsId] = useState('');
-  const [protocol, setProtocol] = useState('');
-  const [ipRange, setIpRange] = useState('');
+  const [asId,setAsId] = useState('');
+  const [AsInfo, setAsInfo] = useState(new Map()); 
 
   // États pour les projets et le projet actuel sélectionné
   const [projects, setProjects] = useState([{ name: 'Projet 1', data: { points: [], lines: [], asRouters: {} } }]);
@@ -308,10 +307,10 @@ function App() {
 
   const handleDialogInfo = (id, range, protocol) => {
     setAsId(id);
-    setIpRange(range);
-    setProtocol(protocol);
     setAsNumbers(prevAsNumbers => [...prevAsNumbers, asId]);
     setNewAsRouters([]);
+    setAsInfo(prevAsinfo => new Map(prevAsinfo.set(id, {'id':id,'range': range, 'protocol': protocol})));
+    console.log('AS Info:', AsInfo);
   };
 
   // Fonction pour ajouter un routeur aléatoire
@@ -338,41 +337,19 @@ function App() {
         [asId]: newAsRouters
       };
     });
+    console.log('AS Routers:', asRouters);
   }, [asId, newAsRouters]);
 
 // Fonction pour gérer le clic sur le bouton "Exporter configuration"
-const handleExportConfiguration = () => {
-  // Vérifiez s'il y a des AS créés
-  setSelectedRouter(null);
-  if (Object.keys(asRouters).length === 0) {
-    alert("Aucun AS n'a été créé.");
-    return;
-  }
-
-  // Affichez les AS créés dans un message
-  const availableAS = Object.keys(asRouters).map(as => `AS ${as}`).join(', ');
-  alert(`AS créés : ${availableAS}`);
-
-  // Demandez à l'utilisateur de choisir un AS
-  const selectedAS = prompt('Choisissez un AS (par exemple, AS 1) :');
-  if (!selectedAS || !asRouters[selectedAS.replace('AS ', '')]) {
-    alert("Veuillez choisir un AS valide.");
-    return;
-  }
-
-  // Une fois qu'un AS est choisi, demandez le type de configuration (RIP ou OSPF)
-  const selectedConfigType = prompt('Choisissez le type de configuration (RIP ou OSPF) :');
-  if (selectedConfigType && (selectedConfigType.toLowerCase() === 'rip' || selectedConfigType.toLowerCase() === 'ospf')) {
-    setConfigType(selectedConfigType.toLowerCase());
-    alert(`Les routeurs de l'AS ${selectedAS} sont connectés via ${selectedConfigType.toUpperCase()}.`);
-  } else {
-    alert('Veuillez choisir une option valide (RIP ou OSPF).');
-  }
-};
+  const handleExportConfiguration = () => {
+    for (let [key, value] of AsInfo.entries()) {
+      console.log(key, value);
+    }
+  };
 
 
   // Retourner le contenu JSX de l'application
-    return (
+  return (
       <div style={{ display: 'flex', flexDirection: 'column', height: '100vh' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', backgroundColor: 'rgba(63, 81, 189, 1)', color: 'white', padding: '20px', borderBottom: '2px solid #ccc' }}>
         <div>
