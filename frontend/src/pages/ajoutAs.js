@@ -132,12 +132,13 @@ function App() {
         alert(`Pas d'interfaces disponibles pour le routeur R${endIndex + 1}.`);
         return;
       }
-
+      const connectInfo = [];
+      connectInfo.push([startIndex+1,(startRouter.connections|| 0) + 1]);
+      connectInfo.push([endIndex+1,(endRouter.connections|| 0) + 1]);
       const newLine = {
         start: startRouter,
         end: endRouter,
-        connectedRouter : [startIndex+1, endIndex+1],
-        connectedInterface : [(startRouter.connections|| 0) + 1, (endRouter.connections|| 0) + 1],
+        connectInfo: connectInfo,
       };
       // TODO : BD IP adresse distribution  
       setLines(prevLines => [...prevLines, newLine]);
