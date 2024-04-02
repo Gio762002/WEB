@@ -9,7 +9,6 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 import Select from '@material-ui/core/Select';
 import MenuItem from '@material-ui/core/MenuItem';
 import FormControl from '@material-ui/core/FormControl';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
 import InputLabel from '@material-ui/core/InputLabel';
 
 export default function FormDialog({mode, handleModeChange, handleDialogInfo}) {
@@ -53,6 +52,7 @@ export default function FormDialog({mode, handleModeChange, handleDialogInfo}) {
             fullWidth
             onChange={(e) => setAsId(e.target.value)}
             inputProps={{ autoComplete: 'off', min: 1  }}
+            required
           />
           <TextField
             autoFocus
@@ -63,6 +63,7 @@ export default function FormDialog({mode, handleModeChange, handleDialogInfo}) {
             fullWidth
             onChange={(e) => setIpRange(e.target.value)}
             inputProps={{ autoComplete: 'off' }}
+            required
           />
           <FormControl fullWidth>
             <InputLabel id="protocol-label">IGP Protocole</InputLabel>

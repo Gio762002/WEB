@@ -28,8 +28,6 @@ function App() {
   // États pour le menu et le routeur sélectionné pour le changement d'image
   const [anchorEl, setAnchorEl] = useState(null);
   const [selectedRouter, setSelectedRouter] = useState(null);
-  // État pour le type de configuration sélectionné
-  const [configType, setConfigType] = useState('');
 
   // Basculer vers le projet par défaut au début
   useEffect(() => {
@@ -178,7 +176,7 @@ function App() {
 
     // Dessiner les cercles autour des AS
     let colorIndex = 0;
-    const colors = ['#FF5733', '#33FF57', '#5733FF', '#FF33A8', '#33A8FF', '#A8FF33', '#FF3333', '#3333FF', '#33FFA8'];
+    const colors = ['#037ef3', '#f85a40', '#00c16e', '#7552cc', '#0cb9c1', '#f48924', '#ffc845', '#ff4f81', '#33FFA8'];
     Object.entries(asRouters).forEach(([as, routers]) => {
       // Trouver les coordonnées minimales et maximales des routeurs de l'AS
       let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
@@ -505,9 +503,7 @@ function App() {
           <Button onClick={() => handleModeChange('move')} variant={mode === 'move' ? 'contained' : 'text'} color="primary" style={{ marginBottom: '10px', width: '100%' }}>
             Déplacer les routeurs
           </Button>
-          {/* <Button onClick={() => handleModeChange('newAS')} variant={mode === 'newAS' ? 'contained' : 'text'} color="primary" style={{ marginTop: '30px',marginBottom: '0px', width: '100%' }}>
-            Nouvel AS
-          </Button> */}
+          
           <FormDialog mode={mode} handleModeChange={handleModeChange} handleDialogInfo={handleDialogInfo}/>
           <TableContainer component={Paper} style={{ marginTop: '0px' }}>
             <Table>

@@ -3,7 +3,7 @@ import { app } from '../firebase';
 import { Button } from '@material-ui/core';
 import { useNavigate } from 'react-router-dom';
 
-export default function OAuth() {
+export default function OAuth({onLogin}) {
   const navigate = useNavigate();
   const handleGoogleClick = async () => {
     try {
@@ -24,7 +24,7 @@ export default function OAuth() {
       });
       const data = await res.json();
       console.log(data);
-
+      onLogin();
       navigate('/topo');
     } catch (error) {
       console.log('could not sign in with google', error);

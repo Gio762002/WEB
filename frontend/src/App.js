@@ -8,16 +8,14 @@ function App() {
   const [Login, setLogin] = useState(false);
 
   const handleLogin = () => {
-    console.log(Login);
-    <Navigate to="/topo"/>
-    return setLogin(true);
+    setLogin(true);
   };
   
   return (
     <Router>
       <Routes>
         <Route path="/admin" element={<Auth onLogin={handleLogin} />} />
-        <Route path="/topo" element={<AjoutAs />} />
+        <Route path="/topo" element={Login? <AjoutAs />:<Navigate to="/admin" />} />
         <Route path="*" element={<Navigate to="/admin" />} />
       </Routes>
     </Router>
