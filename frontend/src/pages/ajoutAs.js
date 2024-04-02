@@ -296,16 +296,6 @@ function App() {
   // Gestionnaire de changement de mode
   const handleModeChange = (selectedMode) => {
     setMode(selectedMode);
-    // if (selectedMode === 'newAS') {
-      // let asID = prompt('Numéro de l\'AS :');
-      //   if ((isNaN(asID) || asID === '' || asID === null ) && asNumbers.includes(asID)) {
-      //     alert('Veuillez saisir un numéro d\'AS valide.');
-      //   } else {
-      //     setNewAsid(asID);
-      //     setAsNumbers(prevAsNumbers => [...prevAsNumbers, asID]);
-      //   }
-      // setNewAsRouters([]);
-    // }
   };
 
   const handleDialogInfo = (id, range, protocol) => {
